@@ -30,7 +30,7 @@ class AppDrawer extends StatelessWidget {
             },
           ),
           ExpansionTile(
-            leading: Icon(Icons.widgets),
+            leading: Icon(Icons.smart_button),
             title: Text('Design Study'),
             initiallyExpanded: true,
             children: [
@@ -47,7 +47,7 @@ class AppDrawer extends StatelessWidget {
             ],
           ),
           ExpansionTile(
-            leading: Icon(Icons.smart_button),
+            leading: Icon(Icons.calculate_rounded),
             title: Text('Calculator'),
             initiallyExpanded: true,
             children: [
