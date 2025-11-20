@@ -17,19 +17,27 @@ A Flutter app to streamline radiology workflow with calculators, protocols, and 
 - Navigation structure with drawer and 4 routes (/, /design/er, /calc/general, /settings)
 - Dynamic AppBar with persistent shell layout
 - Theme switcher (System/Light/Dark) with SharedPreferences persistence
+- DesignER Screen: Protocol generator for CT/MRI Emergency Radiology studies
+  - Three-level dropdown selection (Category → Exam → Protocol)
+  - Mustache-based template generation (lib/services/design/designer/)
+  - Responsive layout with input form and output display
+  - Shared UI components (ThreeLevelDropdowns, GenerateButton, CopyButton)
 
 **Pending:**
-- Clean Architecture layers (domain, data, presentation separation)
-- Feature content for calculators and protocols
-- Business logic and use cases
+- Feature content for calculators
+- Clean Architecture refactoring (domain/data/presentation layers)
 
 **Structure:**
 ```
-lib/app/
-├── pages/        # Screen widgets (placeholders)
-├── widgets/      # shell_layout, app_drawer
-├── providers/    # theme_provider
-└── router.dart   # Route configuration
+lib/
+├── app/
+│   ├── pages/
+│   │   └── designer/       # DesignER screen (implemented)
+│   ├── widgets/            # Reusable UI components
+│   ├── providers/          # theme_provider
+│   └── router.dart
+└── services/
+    └── design/designer/    # Protocol generation business logic
 ```
 
 ## Tech Stack
@@ -38,6 +46,8 @@ lib/app/
 - **Routing:** go_router ^17.0.0
 - **Persistence:** shared_preferences ^2.5.3
 - **UI:** Material 3
+- **Templating:** mustachex ^1.0.0
+- **Utils:** intl ^0.20.2
 
 ## Commands
 

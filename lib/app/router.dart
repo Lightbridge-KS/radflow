@@ -1,7 +1,7 @@
 import 'package:go_router/go_router.dart';
 import 'pages/home_screen.dart';
 import 'pages/settings_screen.dart';
-import 'pages/designer_screen.dart';
+import 'pages/designer/designer_screen.dart';
 import 'pages/calculator_general_screen.dart';
 import 'widgets/shell_layout.dart';
 
