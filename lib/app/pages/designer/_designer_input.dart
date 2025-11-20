@@ -126,7 +126,7 @@ class DesignERInputState extends State<DesignERInput> {
           },
         ),
 
-        const SizedBox(height: 8),
+        const SizedBox(height: 16),
 
         // Checkboxes row
         Row(
@@ -186,7 +186,7 @@ class DesignERInputState extends State<DesignERInput> {
           ],
         ),
 
-        const SizedBox(height: 8),
+        const SizedBox(height: 16),
 
         // eGFR row
         Row(

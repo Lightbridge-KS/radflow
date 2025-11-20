@@ -31,7 +31,8 @@ class ShellLayout extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(_getTitleForRoute(currentPath)),
+        title: Text(_getTitleForRoute(currentPath), style: TextStyle(fontWeight: FontWeight.bold)),
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
       ),
       drawer: const AppDrawer(),
       body: child,

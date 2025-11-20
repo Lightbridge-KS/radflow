@@ -175,10 +175,10 @@ class _DesignERScreenState extends State<DesignERScreen> {
                   controller: _outputController,
                   maxLines: 23,
                   readOnly: false,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     border: OutlineInputBorder(),
                     focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.deepPurple),
+                      borderSide: BorderSide(color: Theme.of(context).colorScheme.tertiary), // Colors.deepPurple
                     ),
                     hintText: 'Generated protocol will appear here...',
                   ),
