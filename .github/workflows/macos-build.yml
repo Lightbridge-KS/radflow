@@ -7,24 +7,8 @@ on:
     branches: [ "main", "dev" ]
     tags:
       - 'v*'
-    # Only run when these paths change
-    paths:
-      - 'lib/**'          # Dart source code
-      - 'macos/**'        # macOS-specific files
-      - 'pubspec.yaml'    # Dependencies
-      - 'pubspec.lock'    # Dependency lock file
-      - 'analysis_options.yaml'  # Dart analysis config
-      - '.github/workflows/macos-build.yml'
   pull_request:
     branches: [ "main", "dev" ]
-    # Only run when these paths change
-    paths:
-      - 'lib/**'          # Dart source code
-      - 'macos/**'        # macOS-specific files
-      - 'pubspec.yaml'    # Dependencies
-      - 'pubspec.lock'    # Dependency lock file
-      - 'analysis_options.yaml'  # Dart analysis config
-      - '.github/workflows/macos-build.yml'
   release:
     types: [published]
 
