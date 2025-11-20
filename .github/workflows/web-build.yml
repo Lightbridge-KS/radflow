@@ -9,9 +9,22 @@ on:
       - 'v*'
     # Only run when these paths change
     paths:
+      - 'lib/**'          # Dart source code
+      - 'web/**'          # Web-specific files
+      - 'pubspec.yaml'    # Dependencies
+      - 'pubspec.lock'    # Dependency lock file
+      - 'analysis_options.yaml'  # Dart analysis config
       - '.github/workflows/web-build.yml'
   pull_request:
     branches: [ "main", "dev" ]
+    # Only run when these paths change
+    paths:
+      - 'lib/**'          # Dart source code
+      - 'web/**'          # Web-specific files
+      - 'pubspec.yaml'    # Dependencies
+      - 'pubspec.lock'    # Dependency lock file
+      - 'analysis_options.yaml'  # Dart analysis config
+      - '.github/workflows/web-build.yml'
   release:
     types: [published]
     
@@ -34,7 +47,7 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
             channel: stable
-            flutter-version: 3.35.7
+            flutter-version-file: pubspec.yaml
       - run: flutter --version
 
       - name: Install dependencies
