@@ -1,3 +1,3 @@
 # RadFlow
 
-> Streamline Workflow in Radiology
+> A cross-platform Flutter App to Streamline Workflow in Radiology
