@@ -1,11 +1,11 @@
 {
-    "name": "radflow",
-    "short_name": "radflow",
+    "name": "RadFlow",
+    "short_name": "RadFlow",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#hexcode",
+    "theme_color": "#hexcode",
+    "description": "RadFlow — Streamline Workflow in Radiology.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

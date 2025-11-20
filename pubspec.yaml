@@ -40,6 +40,25 @@ dependencies:
   mustachex: ^1.0.0
   intl: ^0.20.2
   window_manager: ^0.5.1
+  flutter_launcher_icons: ^0.14.4
+
+flutter_launcher_icons:
+  # android: "launcher_icon"  # Icon name for Android
+  ios: false                 # icon for iOS
+  image_path: "assets/icon/icon.png"  # Path to your icon file
+  min_sdk_android: 21       # android min sdk min:16, default 21
+  web:
+    generate: true
+    image_path: "assets/icon/icon.png"
+    background_color: "#hexcode"
+    theme_color: "#hexcode"
+  windows:
+    generate: true
+    image_path: "assets/icon/icon.png"
+    icon_size: 48           # Windows icon size
+  macos:
+    generate: true
+    image_path: "assets/icon/icon.png"
 
 dev_dependencies:
   flutter_test:
