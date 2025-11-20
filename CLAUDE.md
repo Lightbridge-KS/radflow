@@ -8,7 +8,6 @@ A cross-platform (web and desktop) Flutter app to streamline radiology workflow 
 
 ## Current Status
 
-**Architecture:** Simple presentation layer (lib/app/)
 - Navigation: `go_router` with `ShellRoute` pattern
 - State management: Riverpod 3.x
 - UI: Material 3 design system
