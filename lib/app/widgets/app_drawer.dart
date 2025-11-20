@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-
+import '../enums/screen_info.dart';
 // Reusable Drawer with go_router
 class AppDrawer extends StatelessWidget {
   const AppDrawer({super.key});
@@ -14,10 +14,10 @@ class AppDrawer extends StatelessWidget {
         padding: EdgeInsets.zero,
         children: [
           DrawerHeader(
-            decoration: BoxDecoration(color: Colors.blue),
+            decoration: BoxDecoration(color: Theme.of(context).colorScheme.inversePrimary),
             child: Text(
               'Menu',
-              style: TextStyle(color: Colors.white, fontSize: 24),
+              style: TextStyle(color: Theme.of(context).colorScheme.primary, fontSize: 24),
             ),
           ),
           ListTile(
@@ -30,13 +30,13 @@ class AppDrawer extends StatelessWidget {
             },
           ),
           ExpansionTile(
-            leading: Icon(Icons.smart_button),
+            leading: Icon(Icons.medical_information),
             title: Text('Design Study'),
             initiallyExpanded: true,
             children: [
               ListTile(
                 leading: Icon(Icons.circle, size: 12),
-                title: Text('ER'),
+                title: Text(ScreenInfo.designER.title),
                 selected: currentLocation == '/design/er',
                 contentPadding: EdgeInsets.only(left: 72),
                 onTap: () {
@@ -47,7 +47,7 @@ class AppDrawer extends StatelessWidget {
             ],
           ),
           ExpansionTile(
-            leading: Icon(Icons.calculate_rounded),
+            leading: Icon(Icons.calculate),
             title: Text('Calculator'),
             initiallyExpanded: true,
             children: [
