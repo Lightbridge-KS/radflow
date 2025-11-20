@@ -1,0 +1,113 @@
+# Windows Flutter Application Build GitHub Action
+
+name: Windows Build
+
+on:
+  push:
+    branches: [ "main", "dev" ]
+    tags:
+      - 'v*'
+    # Only run when these paths change
+    paths:
+      - 'lib/**'          # Dart source code
+      - 'windows/**'      # Windows-specific files
+      - 'pubspec.yaml'    # Dependencies
+      - 'pubspec.lock'    # Dependency lock file
+      - 'analysis_options.yaml'  # Dart analysis config
+      - '.github/workflows/windows-build.yml'
+  pull_request:
+    branches: [ "main", "dev" ]
+    # Only run when these paths change
+    paths:
+      - 'lib/**'          # Dart source code
+      - 'windows/**'      # Windows-specific files
+      - 'pubspec.yaml'    # Dependencies
+      - 'pubspec.lock'    # Dependency lock file
+      - 'analysis_options.yaml'  # Dart analysis config
+      - '.github/workflows/windows-build.yml'
+  release:
+    types: [published]
+
+
+permissions:
+  contents: write  # This gives permission to create releases
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up dart
+        uses: dart-lang/setup-dart@v1
+        with:
+          sdk: 3.8.1
+          architecture: x64
+      - run: dart --version
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+            channel: stable
+            flutter-version-file: pubspec.yaml
+      - run: flutter --version
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      # Extract version from pubspec.yaml for the installer
+      - name: Extract version
+        shell: pwsh
+        run: |
+          $pubspecContent = Get-Content -Path pubspec.yaml -Raw
+          if ($pubspecContent -match "version:\s*([\d\.]+)(\+\d+)?") {
+            $version = $Matches[1]
+            echo "APP_VERSION=$version" | Out-File -FilePath $Env:GITHUB_ENV -Append
+          } else {
+            Write-Error "Version field not found in pubspec.yaml. Please ensure the version is correctly specified."
+            exit 1
+          }
+
+      # Enable Windows platform
+      - name: Enable Windows platform support
+        run: flutter config --enable-windows-desktop
+
+      # Build Windows application
+      - name: Build Windows application
+        run: flutter build windows --release
+
+      # Debug: List all files in the Release directory
+      - name: List build contents
+        run: |
+          Write-Host "Contents of Release directory:"
+          Get-ChildItem -Path "build\windows\x64\runner\Release" -Recurse | Select-Object Name, FullName
+          Write-Host "`nDLL files specifically:"
+          Get-ChildItem -Path "build\windows\x64\runner\Release\*.dll" | Select-Object Name
+                  
+      # Package Windows app with Inno Setup
+      - name: Install Inno Setup
+        run: choco install innosetup -y
+        
+      - name: Compile Installer
+        run: |
+          & "C:\Program Files (x86)\Inno Setup 6\iscc.exe" /O"build\windows\installer" /DAppVersion=$env:APP_VERSION "windows\installer\inno_setup.iss"
+          Get-ChildItem -Path "build\windows\installer"
+
+      # Archive the built installer
+      - name: Archive Windows installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-installer
+          path: build\windows\installer\*.exe
+
+      # Create GitHub Release when a tag is pushed
+      - name: Release Windows installer
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: |
+            build/windows/installer/*.exe
+          name: ${{ github.ref_name }}
+          draft: false
+          prerelease: false
+          generate_release_notes: false

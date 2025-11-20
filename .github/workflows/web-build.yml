@@ -1,0 +1,87 @@
+# Web Flutter Application Build GitHub Action
+
+name: Web Build
+
+on:
+  push:
+    branches: [ "main", "dev" ]
+    tags:
+      - 'v*'
+    # Only run when these paths change
+    paths:
+      - 'lib/**'          # Dart source code
+      - 'web/**'          # Web-specific files
+      - 'pubspec.yaml'    # Dependencies
+      - 'pubspec.lock'    # Dependency lock file
+      - 'analysis_options.yaml'  # Dart analysis config
+      - '.github/workflows/web-build.yml'
+  pull_request:
+    branches: [ "main", "dev" ]
+    # Only run when these paths change
+    paths:
+      - 'lib/**'          # Dart source code
+      - 'web/**'          # Web-specific files
+      - 'pubspec.yaml'    # Dependencies
+      - 'pubspec.lock'    # Dependency lock file
+      - 'analysis_options.yaml'  # Dart analysis config
+      - '.github/workflows/web-build.yml'
+  release:
+    types: [published]
+    
+permissions:
+  contents: write  # This gives permission to create releases
+
+jobs:
+  build-web:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up dart
+        uses: dart-lang/setup-dart@v1
+        with:
+          sdk: 3.8.1
+      - run: dart --version
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+            channel: stable
+            flutter-version-file: pubspec.yaml
+      - run: flutter --version
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      # Enable web platform
+      - name: Enable web platform support
+        run: flutter config --enable-web
+
+      # Build web application
+      - name: Build web application
+        run: flutter build web --no-web-resources-cdn --release
+
+      # Package web app
+      - name: Package web app
+        run: |
+          cd build/web
+          zip -r RadFlow-web.zip .
+
+      # Archive the built application
+      - name: Archive web build
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-build
+          path: build/web/*.zip
+
+      # Create GitHub Release when a tag is pushed
+      - name: Release web app
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: |
+            build/web/*.zip
+          name: ${{ github.ref_name }}
+          draft: false
+          prerelease: false
+          generate_release_notes: false

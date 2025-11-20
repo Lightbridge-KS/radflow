@@ -1,0 +1,87 @@
+# macOS Flutter Application Build GitHub Action
+
+name: macOS Build
+
+on:
+  push:
+    branches: [ "main", "dev" ]
+    tags:
+      - 'v*'
+    # Only run when these paths change
+    paths:
+      - 'lib/**'          # Dart source code
+      - 'macos/**'        # macOS-specific files
+      - 'pubspec.yaml'    # Dependencies
+      - 'pubspec.lock'    # Dependency lock file
+      - 'analysis_options.yaml'  # Dart analysis config
+      - '.github/workflows/macos-build.yml'
+  pull_request:
+    branches: [ "main", "dev" ]
+    # Only run when these paths change
+    paths:
+      - 'lib/**'          # Dart source code
+      - 'macos/**'        # macOS-specific files
+      - 'pubspec.yaml'    # Dependencies
+      - 'pubspec.lock'    # Dependency lock file
+      - 'analysis_options.yaml'  # Dart analysis config
+      - '.github/workflows/macos-build.yml'
+  release:
+    types: [published]
+
+permissions:
+  contents: write  # This gives permission to create releases
+
+jobs:
+  build-macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up dart
+        uses: dart-lang/setup-dart@v1
+        with:
+          sdk: 3.8.1
+      - run: dart --version
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+            channel: stable
+            flutter-version-file: pubspec.yaml
+      - run: flutter --version
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      # Enable macOS platform
+      - name: Enable macOS platform support
+        run: flutter config --enable-macos-desktop
+
+      # Build macOS application
+      - name: Build macOS application
+        run: flutter build macos --release
+
+      # Package macOS app
+      - name: Package macOS app
+        run: |
+          cd build/macos/Build/Products/Release
+          zip -r RadFlow-macos.zip *.app
+
+      # Archive the built application
+      - name: Archive macOS build
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos-build
+          path: build/macos/Build/Products/Release/*.zip
+
+      # Create GitHub Release when a tag is pushed
+      - name: Release macOS app
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: |
+            build/macos/Build/Products/Release/*.zip
+          name: ${{ github.ref_name }}
+          draft: false
+          prerelease: false
+          generate_release_notes: false
