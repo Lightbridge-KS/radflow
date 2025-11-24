@@ -14,10 +14,11 @@ class ThemeModeNotifier extends Notifier<ThemeMode> {
 
   /// Load saved theme mode from SharedPreferences
   Future<void> _loadThemeMode() async {
-    final prefs = await SharedPreferences.getInstance();
-    final savedThemeMode = prefs.getString(_themeModeKey);
+    final SharedPreferencesAsync asyncPrefs = SharedPreferencesAsync();
+    final savedThemeMode = await asyncPrefs.getString(_themeModeKey);
 
     if (savedThemeMode != null) {
+
       state = _stringToThemeMode(savedThemeMode);
     }
   }
@@ -25,9 +26,8 @@ class ThemeModeNotifier extends Notifier<ThemeMode> {
   /// Update theme mode and persist to SharedPreferences
   Future<void> setThemeMode(ThemeMode mode) async {
     state = mode;
-
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_themeModeKey, _themeModeToString(mode));
+    final SharedPreferencesAsync asyncPrefs = SharedPreferencesAsync();
+    await asyncPrefs.setString(_themeModeKey, _themeModeToString(mode));
   }
 
   /// Convert ThemeMode to String for persistence
