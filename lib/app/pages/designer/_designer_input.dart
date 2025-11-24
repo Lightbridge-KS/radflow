@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-import '../../../services/design/designer/protocol_data.dart';
+import '../../../services/design/designer/designer_protocol_data.dart';
 import '../../../services/design/_utils.dart';
 import '../../widgets/dropdowns_three.dart';
 
@@ -116,8 +116,8 @@ class DesignERInputState extends State<DesignERInput> {
       children: [
         // Three-level dropdowns
         ThreeLevelDropdowns(
-          choiceIdMap: ProtocolData.choiceIdMap,
-          idDispMap: ProtocolData.idDispMap,
+          choiceIdMap: DesignErProtocolData.choiceIdMap,
+          idDispMap: DesignErProtocolData.idDispMap,
           onSelectionChanged: (selectionMap) {
             setState(() {
               _protocolSelection = selectionMap;

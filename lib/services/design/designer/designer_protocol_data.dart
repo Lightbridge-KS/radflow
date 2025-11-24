@@ -1,6 +1,6 @@
 // ===== DATA MODULE =====
 
-class ProtocolData {
+class DesignErProtocolData {
   // ID-based hierarchical mapping from: `category_id` -> `exam_id` -> `protocol_id`
   // These will appear in the app dropdown level 1, 2, and 3, respectively. 
   static const Map<String, Map<String, List<String>>> choiceIdMap = {
