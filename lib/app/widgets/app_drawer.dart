@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../enums/screen_info.dart';
+import '../router.dart';
 // Reusable Drawer with go_router
 class AppDrawer extends StatelessWidget {
   const AppDrawer({super.key});
@@ -53,11 +54,11 @@ class AppDrawer extends StatelessWidget {
             children: [
               ListTile(
                 leading: Icon(Icons.circle, size: 12),
-                title: Text('General'),
-                selected: currentLocation == '/calc/general',
+                title: Text(ScreenInfo.calcAbdo.title),
+                selected: currentLocation == Routes.calculatorAbdomen,
                 contentPadding: EdgeInsets.only(left: 72),
                 onTap: () {
-                  context.go('/calc/general');
+                  context.go(Routes.calculatorAbdomen);
                   Navigator.pop(context);
                 },
               ),

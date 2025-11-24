@@ -2,9 +2,18 @@ import 'package:go_router/go_router.dart';
 import 'pages/home_screen.dart';
 import 'pages/settings_screen.dart';
 import 'pages/designer/designer_screen.dart';
-import 'pages/calculator_general_screen.dart';
+import 'pages/calculator/calculator_abdomen_screen.dart';
 import 'widgets/shell_layout.dart';
 
+// Route constants
+abstract class Routes {
+  static const String home = '/';
+  static const String designER = '/design/er';
+  static const String calculatorAbdomen = '/calc/abdomen';
+  static const String settings = '/settings';
+}
+
+// Routers
 final class AppRouter {
   static final GoRouter router = GoRouter(
     initialLocation: Routes.home,
@@ -27,10 +36,10 @@ final class AppRouter {
             ),
           ),
           GoRoute(
-            path: Routes.calculatorGeneral,
+            path: Routes.calculatorAbdomen,
             pageBuilder: (context, state) => NoTransitionPage(
               key: state.pageKey,
-              child: const CalculatorGeneralScreen(),
+              child: const CalculatorAbdomenScreen(),
             ),
           ),
           GoRoute(
@@ -46,10 +55,3 @@ final class AppRouter {
   );
 }
 
-// Route constants
-abstract class Routes {
-  static const String home = '/';
-  static const String designER = '/design/er';
-  static const String calculatorGeneral = '/calc/general';
-  static const String settings = '/settings';
-}

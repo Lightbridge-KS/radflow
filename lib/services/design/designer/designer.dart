@@ -1,6 +1,6 @@
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:mustachex/mustachex.dart';
-import 'protocol_data.dart';
+import 'designer_protocol_data.dart';
 import '../_utils.dart';
 
 /// A Flutter class for generating CT and MRI protocol templates in emergency departments.
@@ -148,7 +148,7 @@ class Designer {
   /// - Referring physician details
   Future<String> designCT() async {
     // Get protocol info from the data structure
-    final protocolInfo = ProtocolData.protocolInfo['ct']?[protocolId];
+    final protocolInfo = DesignErProtocolData.protocolInfo['ct']?[protocolId];
     if (protocolInfo == null) {
       throw Exception('Protocol ID not found: $protocolId');
     }
@@ -194,7 +194,7 @@ class Designer {
   /// Currently supports MRI screening protocols, primarily for whole spine imaging.
   Future<String> designMR() async {
     // Get protocol info from the data structure
-    final protocolInfo = ProtocolData.protocolInfo['mr']?[protocolId];
+    final protocolInfo = DesignErProtocolData.protocolInfo['mr']?[protocolId];
     if (protocolInfo == null) {
       throw Exception('Protocol ID not found: $protocolId');
     }

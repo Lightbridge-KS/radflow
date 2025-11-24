@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'app_drawer.dart';
 import '../enums/screen_info.dart';
+import '../router.dart';
 
 /// Shell layout that provides persistent AppBar and Drawer
 /// with dynamic title based on current route
@@ -16,10 +17,10 @@ class ShellLayout extends StatelessWidget {
   /// Map route paths to AppBar titles
   String _getTitleForRoute(String path) {
     final titleMap = {
-      '/': 'RadFlow',
-      '/design/er': ScreenInfo.designER.title, 
-      '/calc/general': 'General Calculator',
-      '/settings': 'Settings',
+      Routes.home: 'RadFlow',
+      Routes.designER: ScreenInfo.designER.title, 
+      Routes.calculatorAbdomen: 'Abdomen Calculator',
+      Routes.settings: 'Settings',
     };
 
     return titleMap[path] ?? 'RadFlow';
