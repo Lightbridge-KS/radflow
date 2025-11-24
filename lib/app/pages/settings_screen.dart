@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../providers/theme_provider.dart';
+import '../router.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -55,6 +57,20 @@ class SettingsScreen extends ConsumerWidget {
                 ),
               ],
             ),
+          ),
+        ),
+        const SizedBox(height: 16),
+
+        // Calculator Templates Section
+        Card(
+          child: ListTile(
+            leading: const Icon(Icons.edit_note),
+            title: const Text('Calculator Templates'),
+            subtitle: const Text('Customize report snippet templates'),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () {
+              context.push(Routes.calculatorTemplates);
+            },
           ),
         ),
       ],

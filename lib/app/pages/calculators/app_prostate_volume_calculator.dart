@@ -1,15 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../services/calculator/volume_calculator.dart';
+import '../../../services/calculator/shared/template_renderer.dart';
+import '../../../services/preferences/snippet_templates_service.dart';
+import '../../providers/snippet_templates_provider.dart';
 import '../../widgets/buttons.dart';
 
-class AppProstateVolumeCalculator extends StatefulWidget {
+class AppProstateVolumeCalculator extends ConsumerStatefulWidget {
   const AppProstateVolumeCalculator({super.key});
 
   @override
-  State<AppProstateVolumeCalculator> createState() => _AppProstateVolumeCalculatorState();
+  ConsumerState<AppProstateVolumeCalculator> createState() => _AppProstateVolumeCalculatorState();
 }
 
-class _AppProstateVolumeCalculatorState extends State<AppProstateVolumeCalculator> {
+class _AppProstateVolumeCalculatorState extends ConsumerState<AppProstateVolumeCalculator> {
   final TextEditingController _inputController = TextEditingController();
   final TextEditingController _outputController = TextEditingController();
 
@@ -20,11 +24,32 @@ class _AppProstateVolumeCalculatorState extends State<AppProstateVolumeCalculato
     super.dispose();
   }
 
-  void _calculate() {
-    final result = VolumeCalculator.prostateVolumeFromString(_inputController.text);
-    setState(() {
-      _outputController.text = result;
-    });
+  Future<void> _calculate() async {
+    final data = VolumeCalculator.prostateVolumeDataFromString(_inputController.text);
+
+    if (data == null) {
+      setState(() {
+        _outputController.text = '';
+      });
+      return;
+    }
+
+    // Get template from service (await the future)
+    final service = ref.read(snippetTemplatesServiceProvider);
+    final template = await service.getTemplate(SnippetTemplatesService.prostateVolumeId);
+
+    if (!mounted) return;
+
+    try {
+      final result = TemplateRenderer.render(template, data);
+      setState(() {
+        _outputController.text = result;
+      });
+    } catch (e) {
+      setState(() {
+        _outputController.text = 'Template error: $e';
+      });
+    }
   }
 
   void _resetInputs() {

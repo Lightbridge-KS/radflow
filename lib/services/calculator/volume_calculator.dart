@@ -15,6 +15,8 @@ import 'shared/_parser.dart';
 ///
 /// * [prostateVolumeFromString] - Parse string input and calculate prostate volume with diagnosis
 /// * [prostateVolume] - Calculate prostate volume and diagnosis from numeric dimensions
+/// * [prostateVolumeDataFromString] - Parse string input and return data Map for template rendering
+/// * [prostateVolumeData] - Return data Map with all calculated values for template rendering
 /// * [ellipsoidVolume] - Calculate volume of an ellipsoid from 3 perpendicular diameters
 ///
 /// **Example**
@@ -94,6 +96,99 @@ class VolumeCalculator {
     }
   }
 
+  /// Returns prostate volume data as a Map for template rendering from string input.
+  ///
+  /// Parses a string containing 3 perpendicular diameters (in cm) and returns
+  /// a Map with all calculated values for use in customizable templates.
+  ///
+  /// **Parameters**
+  ///
+  /// * `input` : String
+  ///     Three perpendicular diameters in cm, separated by commas and/or spaces.
+  ///
+  /// **Returns**
+  ///
+  /// * `Map<String, dynamic>?` - Data map with keys: diagnosis, volume, volumeRaw, d1, d2, d3
+  /// * null if input cannot be parsed or doesn't contain exactly 3 dimensions
+  ///
+  /// **Examples**
+  ///
+  /// ```dart
+  /// var data = prostateVolumeDataFromString("4.5, 3.2, 3.8");
+  /// // Returns: {diagnosis: "Prominent", volume: 29, volumeRaw: 28.6..., d1: 4.5, d2: 3.2, d3: 3.8}
+  /// ```
+  static Map<String, dynamic>? prostateVolumeDataFromString(String input) {
+    dynamic parsed = parseStrToNumOrList(input);
+
+    if (parsed == "") {
+      return null;
+    }
+
+    try {
+      List<double> dim = parsed is double ? [parsed] : parsed;
+
+      if (dim.length != 3) {
+        return null;
+      }
+
+      return prostateVolumeData(dim[0], dim[1], dim[2]);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  /// Returns prostate volume data as a Map for template rendering.
+  ///
+  /// Computes prostate volume and diagnosis, returning all values as a Map
+  /// for use in customizable Mustache templates.
+  ///
+  /// **Parameters**
+  ///
+  /// * `d1` : double - First perpendicular diameter in cm
+  /// * `d2` : double - Second perpendicular diameter in cm
+  /// * `d3` : double - Third perpendicular diameter in cm
+  ///
+  /// **Returns**
+  ///
+  /// * `Map<String, dynamic>` with keys:
+  ///   - `diagnosis` : String - Size classification (Normal/Prominent/Enlarged)
+  ///   - `volume` : int - Rounded volume in ml
+  ///   - `volumeRaw` : double - Raw calculated volume (unrounded)
+  ///   - `d1`, `d2`, `d3` : double - Input diameters in cm
+  ///
+  /// **Examples**
+  ///
+  /// ```dart
+  /// var data = prostateVolumeData(4.5, 3.2, 3.8);
+  /// // Returns: {diagnosis: "Prominent", volume: 29, volumeRaw: 28.6..., d1: 4.5, d2: 3.2, d3: 3.8}
+  /// ```
+  static Map<String, dynamic> prostateVolumeData(double d1, double d2, double d3) {
+    double volumeRaw = ellipsoidVolume(d1, d2, d3);
+    int volume = volumeRaw.round();
+    String diagnosis;
+
+    if (volumeRaw < 25) {
+      diagnosis = "Normal";
+    } else if (volumeRaw == 25) {
+      diagnosis = "Normal or Prominent";
+    } else if (volumeRaw < 40) {
+      diagnosis = "Prominent";
+    } else if (volumeRaw == 40) {
+      diagnosis = "Prominent or Enlarged";
+    } else {
+      diagnosis = "Enlarged";
+    }
+
+    return {
+      "diagnosis": diagnosis,
+      "volume": volume,
+      "volumeRaw": volumeRaw,
+      "d1": d1,
+      "d2": d2,
+      "d3": d3,
+    };
+  }
+
   /// Calculates prostate volume and provides diagnostic assessment from numeric dimensions.
   ///
   /// Computes prostate volume using the ellipsoid formula and returns a formatted
@@ -131,23 +226,8 @@ class VolumeCalculator {
   /// // Returns: "Enlarged size of prostate gland, measuring 72 ml in volume."
   /// ```
   static String prostateVolume(double d1, double d2, double d3) {
-    
-    double volume = ellipsoidVolume(d1, d2, d3);
-    String diagnosis;
-    
-    if (volume < 25) {
-      diagnosis = "Normal";
-    } else if (volume == 25) {
-      diagnosis = "Normal or Prominent";
-    } else if (volume < 40) {
-      diagnosis = "Prominent";
-    } else if (volume == 40) {
-      diagnosis = "Prominent or Enlarged";
-    } else {
-      diagnosis = "Enlarged";
-    }
-    
-    return "$diagnosis size of prostate gland, measuring ${volume.round()} ml in volume.";
+    final data = prostateVolumeData(d1, d2, d3);
+    return "${data['diagnosis']} size of prostate gland, measuring ${data['volume']} ml in volume.";
   }
 
   /// Calculates the volume of an ellipsoid from three perpendicular diameters.

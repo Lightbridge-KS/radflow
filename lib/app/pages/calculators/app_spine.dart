@@ -1,15 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../services/calculator/spine_calculator.dart';
+import '../../../services/calculator/shared/template_renderer.dart';
+import '../../../services/preferences/snippet_templates_service.dart';
+import '../../providers/snippet_templates_provider.dart';
 import '../../widgets/buttons.dart';
 
-class AppSpineCalculator extends StatefulWidget {
+class AppSpineCalculator extends ConsumerStatefulWidget {
   const AppSpineCalculator({super.key});
 
   @override
-  State<AppSpineCalculator> createState() => _AppSpineCalculatorState();
+  ConsumerState<AppSpineCalculator> createState() => _AppSpineCalculatorState();
 }
 
-class _AppSpineCalculatorState extends State<AppSpineCalculator> {
+class _AppSpineCalculatorState extends ConsumerState<AppSpineCalculator> {
   final TextEditingController _normalController = TextEditingController();
   final TextEditingController _collapsedController = TextEditingController();
   final TextEditingController _outputController = TextEditingController();
@@ -22,14 +26,35 @@ class _AppSpineCalculatorState extends State<AppSpineCalculator> {
     super.dispose();
   }
 
-  void _calculate() {
-    final result = SpineCalculator.spineHeightLossFromString(
+  Future<void> _calculate() async {
+    final data = SpineCalculator.spineHeightLossDataFromString(
       normalCm: _normalController.text,
       collapsedCM: _collapsedController.text,
     );
-    setState(() {
-      _outputController.text = result;
-    });
+
+    if (data == null) {
+      setState(() {
+        _outputController.text = '';
+      });
+      return;
+    }
+
+    // Get template from service (await the future)
+    final service = ref.read(snippetTemplatesServiceProvider);
+    final template = await service.getTemplate(SnippetTemplatesService.spineHeightLossId);
+
+    if (!mounted) return;
+
+    try {
+      final result = TemplateRenderer.render(template, data);
+      setState(() {
+        _outputController.text = result;
+      });
+    } catch (e) {
+      setState(() {
+        _outputController.text = 'Template error: $e';
+      });
+    }
   }
 
   void _resetInputs() {
