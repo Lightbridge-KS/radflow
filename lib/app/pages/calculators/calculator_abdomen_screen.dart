@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'app_prostate_volume_calculator.dart';
 import 'app_spine.dart';
+import 'app_adrenal_washout_calculator.dart';
 
 class CalculatorAbdomenScreen extends StatelessWidget {
   const CalculatorAbdomenScreen({super.key});
@@ -15,6 +16,8 @@ class CalculatorAbdomenScreen extends StatelessWidget {
             AppProstateVolumeCalculator(),
             SizedBox(height: 32),
             AppSpineCalculator(), 
+            SizedBox(height: 32),
+            AppAdrenalWashoutCalculator(), // [TODO]
           ],
         ),
       );

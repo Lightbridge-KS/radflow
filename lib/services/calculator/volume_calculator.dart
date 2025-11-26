@@ -1,4 +1,6 @@
 import 'dart:math' as math;
+import '../../core/result.dart';
+import 'calculator_error.dart';
 import 'shared/_parser.dart';
 
 /// Calculator for medical volume measurements and assessments.
@@ -54,26 +56,53 @@ class VolumeCalculator {
   /// **Examples**
   ///
   /// ```dart
-  /// var data = getProstateVolumeDataFromString("4.5, 3.2, 3.8");
-  /// // Returns: {diagnosis: "Prominent", volume: 29, volumeRaw: 28.6..., d1: 4.5, d2: 3.2, d3: 3.8}
+  /// var result = getProstateVolumeDataFromString("4.5, 3.2, 3.8");
+  /// // Returns: Success({diagnosis: "Prominent", volume: 29, ...})
   /// ```
-  static Map<String, dynamic>? getProstateVolumeDataFromString(String input) {
+  static Result<Map<String, dynamic>, CalculatorError> getProstateVolumeDataFromString(String input) {
+    // Check empty input
+    if (input.trim().isEmpty) {
+      return Failure(ValidationError('Prostate dimensions are required'));
+    }
+
+    // Parse using shared parser
     dynamic parsed = parseStrToNumOrList(input);
 
     if (parsed == "") {
-      return null;
+      return Failure(ParseError('Prostate dimensions', input));
     }
 
+    // Convert to list
+    List<double> dimensions;
     try {
-      List<double> dim = parsed is double ? [parsed] : parsed;
-
-      if (dim.length != 3) {
-        return null;
-      }
-
-      return getProstateVolumeData(dim[0], dim[1], dim[2]);
+      dimensions = parsed is double ? [parsed] : parsed as List<double>;
     } catch (e) {
-      return null;
+      return Failure(ParseError('Prostate dimensions', input));
+    }
+
+    // Validate count
+    if (dimensions.length < 3) {
+      return Failure(ValidationError(
+        'Please enter all 3 dimensions (e.g., "4.5 3.2 3.8")'
+      ));
+    }
+    if (dimensions.length > 3) {
+      return Failure(ValidationError(
+        'Please enter only 3 dimensions (e.g., "4.5 3.2 3.8")'
+      ));
+    }
+
+    // Validate positive values
+    if (dimensions.any((d) => d <= 0)) {
+      return Failure(ValidationError('All dimensions must be greater than zero'));
+    }
+
+    // Calculate
+    try {
+      final data = getProstateVolumeData(dimensions[0], dimensions[1], dimensions[2]);
+      return Success(data);
+    } catch (e) {
+      return Failure(CalculationError('Calculation failed: $e'));
     }
   }
 

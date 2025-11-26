@@ -50,6 +50,7 @@ class SnippetTemplatesService {
   /// Calculator ID constants for type safety
   static const String prostateVolumeId = 'prostate_volume';
   static const String spineHeightLossId = 'spine_height_loss';
+  static const String adrenalWashoutId = 'adrenal_washout';
 
   /// Gets metadata about available variables for a calculator
   ///
@@ -110,6 +111,29 @@ class SnippetTemplatesService {
             'lossPercent': 35.2,
             'normalMean': 2.5,
             'collapsedMean': 1.62,
+          },
+        );
+      case adrenalWashoutId:
+        return CalculatorMetadata(
+          id: adrenalWashoutId,
+          name: 'Adrenal Washout',
+          availableVariables: [
+            VariableInfo('nc', 'Non-contrast HU value (optional)'),
+            VariableInfo('enh', 'Enhanced HU value'),
+            VariableInfo('delayed', 'Delayed HU value'),
+            VariableInfo('rpw', 'Relative percentage washout (raw decimal)'),
+            VariableInfo('apw', 'Absolute percentage washout (raw decimal, null if nc not provided)'),
+            VariableInfo('rpwOneDecimal', 'RPW formatted to 1 decimal place'),
+            VariableInfo('apwOneDecimal', 'APW formatted to 1 decimal place (null if nc not provided)'),
+          ],
+          sampleData: {
+            'nc': 10.0,
+            'enh': 100.0,
+            'delayed': 60.0,
+            'rpw': 40.0,
+            'apw': 44.4,
+            'rpwOneDecimal': '40.0',
+            'apwOneDecimal': '44.4',
           },
         );
       default:
@@ -225,7 +249,7 @@ class SnippetTemplatesService {
   ///
   /// * `List<String>` - List of all calculator identifiers
   List<String> getAllCalculatorIds() {
-    return [prostateVolumeId, spineHeightLossId];
+    return [prostateVolumeId, spineHeightLossId, adrenalWashoutId];
   }
 
   /// Loads the default template from assets

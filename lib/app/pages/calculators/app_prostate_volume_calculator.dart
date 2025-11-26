@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../core/result.dart';
 import '../../../services/calculator/volume_calculator.dart';
 import '../../../services/calculator/shared/template_renderer.dart';
 import '../../../services/preferences/snippet_templates_service.dart';
 import '../../providers/snippet_templates_provider.dart';
 import '../../widgets/buttons.dart';
+import 'calculator_error_handler.dart';
 
 class AppProstateVolumeCalculator extends ConsumerStatefulWidget {
   const AppProstateVolumeCalculator({super.key});
@@ -25,30 +27,31 @@ class _AppProstateVolumeCalculatorState extends ConsumerState<AppProstateVolumeC
   }
 
   Future<void> _calculate() async {
-    final data = VolumeCalculator.getProstateVolumeDataFromString(_inputController.text);
+    final result = VolumeCalculator.getProstateVolumeDataFromString(_inputController.text);
 
-    if (data == null) {
-      setState(() {
-        _outputController.text = '';
-      });
-      return;
-    }
+    switch (result) {
+      case Success(value: final data):
+        // Render template
+        final service = ref.read(snippetTemplatesServiceProvider);
+        final template = await service.getTemplate(SnippetTemplatesService.prostateVolumeId);
 
-    // Get template from service (await the future)
-    final service = ref.read(snippetTemplatesServiceProvider);
-    final template = await service.getTemplate(SnippetTemplatesService.prostateVolumeId);
+        if (!mounted) return;
 
-    if (!mounted) return;
+        try {
+          final output = TemplateRenderer.render(template, data);
+          setState(() => _outputController.text = output);
+        } catch (e) {
+          setState(() => _outputController.text = 'Template error: $e');
+          if (mounted) {
+            CalculatorErrorHandler.showTemplateError(context);
+          }
+        }
 
-    try {
-      final result = TemplateRenderer.render(template, data);
-      setState(() {
-        _outputController.text = result;
-      });
-    } catch (e) {
-      setState(() {
-        _outputController.text = 'Template error: $e';
-      });
+      case Failure(error: final err):
+        setState(() => _outputController.text = '');
+        if (mounted) {
+          CalculatorErrorHandler.showCalculatorError(context, err);
+        }
     }
   }
 

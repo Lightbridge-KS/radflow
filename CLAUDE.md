@@ -29,29 +29,32 @@ A cross-platform (web and desktop) Flutter app to streamline radiology workflow 
   - Mustache-based template generation (lib/services/design/designer/)
   - Responsive layout with input form and output display
   - Shared UI components (ThreeLevelDropdowns, GenerateButton, CopyButton)
-- Calculators: Prostate Volume & Spine Height Loss
+- Calculators: Prostate Volume, Spine Height Loss, Adrenal CT Washout
   - Business logic returns data Maps for template rendering
   - Customizable Mustache templates (default + user override)
   - Settings → Calculator Templates editor with live preview
   - SharedPreferencesAsync persistence for custom templates
   - Template service with metadata (available variables, sample data)
+  - Type-safe error handling with Result<T, E> pattern (sealed classes)
+  - Specific validation errors displayed via SnackBar (ParseError, ValidationError, CalculationError)
 - App icons configured via flutter_launcher_icons (web, Windows, macOS)
 - CI/CD: GitHub Actions workflows for web (no CDN), Windows, and macOS builds
 
 **Structure:**
 ```
 lib/
+├── core/                     # result.dart (Result<T,E> sealed class)
 ├── app/
 │   ├── pages/
 │   │   ├── designer/         # DesignER screen
-│   │   ├── calculators/      # Calculator UI components
+│   │   ├── calculators/      # Calculator UI components + error handler
 │   │   └── settings/         # Calculator template editor
 │   ├── widgets/              # Reusable UI components
 │   ├── providers/            # theme_provider, snippet_templates_provider
 │   ├── themes/               # Material 3 theme configurations
 │   └── router.dart
 ├── services/
-│   ├── calculator/           # Calculator business logic
+│   ├── calculator/           # Calculator business logic + calculator_error.dart
 │   │   ├── shared/           # template_renderer, parser, statistics
 │   │   └── templates/        # Default Mustache templates
 │   ├── design/designer/      # Protocol generation business logic

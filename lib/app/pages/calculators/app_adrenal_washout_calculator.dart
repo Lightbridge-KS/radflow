@@ -1,44 +1,47 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/result.dart';
-import '../../../services/calculator/spine_calculator.dart';
+import '../../../services/calculator/adrenal_washout_calculator.dart';
 import '../../../services/calculator/shared/template_renderer.dart';
 import '../../../services/preferences/snippet_templates_service.dart';
 import '../../providers/snippet_templates_provider.dart';
 import '../../widgets/buttons.dart';
 import 'calculator_error_handler.dart';
 
-class AppSpineCalculator extends ConsumerStatefulWidget {
-  const AppSpineCalculator({super.key});
+class AppAdrenalWashoutCalculator extends ConsumerStatefulWidget {
+  const AppAdrenalWashoutCalculator({super.key});
 
   @override
-  ConsumerState<AppSpineCalculator> createState() => _AppSpineCalculatorState();
+  ConsumerState<AppAdrenalWashoutCalculator> createState() => _AppAdrenalWashoutCalculatorState();
 }
 
-class _AppSpineCalculatorState extends ConsumerState<AppSpineCalculator> {
-  final TextEditingController _normalController = TextEditingController();
-  final TextEditingController _collapsedController = TextEditingController();
+class _AppAdrenalWashoutCalculatorState extends ConsumerState<AppAdrenalWashoutCalculator> {
+  final TextEditingController _preContrastController = TextEditingController();
+  final TextEditingController _enhancedController = TextEditingController();
+  final TextEditingController _delayedController = TextEditingController();
   final TextEditingController _outputController = TextEditingController();
 
   @override
   void dispose() {
-    _normalController.dispose();
-    _collapsedController.dispose();
+    _preContrastController.dispose();
+    _enhancedController.dispose();
+    _delayedController.dispose();
     _outputController.dispose();
     super.dispose();
   }
 
   Future<void> _calculate() async {
-    final result = SpineCalculator.getSpineHeightLossDataFromString(
-      normalCm: _normalController.text,
-      collapsedCM: _collapsedController.text,
+    final result = AdrenalWashoutCalculator.getAdrenalWashoutDataFromString(
+      nc: _preContrastController.text.trim().isEmpty ? null : _preContrastController.text,
+      enh: _enhancedController.text,
+      delayed: _delayedController.text,
     );
 
     switch (result) {
       case Success(value: final data):
-        // Render template
+        // Get template and render
         final service = ref.read(snippetTemplatesServiceProvider);
-        final template = await service.getTemplate(SnippetTemplatesService.spineHeightLossId);
+        final template = await service.getTemplate(SnippetTemplatesService.adrenalWashoutId);
 
         if (!mounted) return;
 
@@ -62,8 +65,9 @@ class _AppSpineCalculatorState extends ConsumerState<AppSpineCalculator> {
 
   void _resetInputs() {
     setState(() {
-      _normalController.clear();
-      _collapsedController.clear();
+      _preContrastController.clear();
+      _enhancedController.clear();
+      _delayedController.clear();
       _outputController.clear();
     });
   }
@@ -74,7 +78,7 @@ class _AppSpineCalculatorState extends ConsumerState<AppSpineCalculator> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Spine Height Loss',
+          'Adrenal CT Washout Calculator',
           style: Theme.of(context).textTheme.headlineSmall?.copyWith(
             fontWeight: FontWeight.bold,
           ),
@@ -88,34 +92,47 @@ class _AppSpineCalculatorState extends ConsumerState<AppSpineCalculator> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   TextField(
-                    controller: _normalController,
+                    controller: _preContrastController,
                     decoration: const InputDecoration(
-                      labelText: 'Input: Normal height (cm)',
-                      hintText: 'Normal height in cm',
+                      labelText: 'Pre-contrast (HU) (Optional)',
+                      hintText: 'e.g. 10',
                       border: OutlineInputBorder(),
                     ),
+                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
                     onSubmitted: (_) => _calculate(),
                   ),
                   const SizedBox(height: 12),
                   TextField(
-                    controller: _collapsedController,
+                    controller: _enhancedController,
                     decoration: const InputDecoration(
-                      labelText: 'Input: Collapsed height (cm)',
-                      hintText: 'Collapsed height in cm',
+                      labelText: 'Enhanced (HU)',
+                      hintText: 'e.g. 100',
                       border: OutlineInputBorder(),
                     ),
+                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    onSubmitted: (_) => _calculate(),
+                  ),
+                  const SizedBox(height: 12),
+                  TextField(
+                    controller: _delayedController,
+                    decoration: const InputDecoration(
+                      labelText: '15 Minute Delayed (HU)',
+                      hintText: 'e.g. 60',
+                      border: OutlineInputBorder(),
+                    ),
+                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
                     onSubmitted: (_) => _calculate(),
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Input height in centimeter and use two values to calculate mean height, separated by spaces or comma (e.g. 10 12)',
+                    'Pre-contrast is optional. If provided, both APW and RPW will be calculated.',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: Colors.grey,
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    'Mild (20-25%), Moderate (25-40%), Severe (>40%)',
+                    'APW >60% or RPW >40% suggests adenoma over malignancy',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: Colors.grey,
                     ),
@@ -131,7 +148,7 @@ class _AppSpineCalculatorState extends ConsumerState<AppSpineCalculator> {
                   TextField(
                     controller: _outputController,
                     decoration: const InputDecoration(
-                      labelText: 'Height loss snippet',
+                      labelText: 'Washout Result',
                       border: OutlineInputBorder(),
                     ),
                     readOnly: false,

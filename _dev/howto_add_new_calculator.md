@@ -18,6 +18,8 @@ RadFlow's calculator system has three main components:
 Create a new calculator file (e.g., `my_calculator.dart`) with the following structure:
 
 ```dart
+import '../../core/result.dart';
+import 'calculator_error.dart';
 import 'shared/_parser.dart';
 
 /// Calculator for [description]
@@ -26,11 +28,14 @@ import 'shared/_parser.dart';
 ///
 /// * [myCalculationFromString] - Parse string input and calculate
 /// * [myCalculation] - Calculate from numeric values
-/// * [getMyCalculationDataFromString] - Return data Map for template rendering from string
+/// * [getMyCalculationDataFromString] - Return Result with data Map or specific error for template rendering
 /// * [getMyCalculationData] - Return data Map with all calculated values for template rendering
 class MyCalculator {
 
-  /// Returns calculation data as a Map for template rendering from string input
+  /// Returns calculation data as a Result for template rendering from string input
+  ///
+  /// Returns a [Result] containing either the calculated data or a specific error.
+  /// Possible errors: [ParseError], [ValidationError], [CalculationError].
   ///
   /// **Parameters**
   ///
@@ -38,25 +43,46 @@ class MyCalculator {
   ///
   /// **Returns**
   ///
-  /// * `Map<String, dynamic>?` - Data map with calculated values
-  /// * null if input cannot be parsed
-  static Map<String, dynamic>? getMyCalculationDataFromString(String input) {
+  /// * `Result<Map<String, dynamic>, CalculatorError>` - Success with data map or Failure with specific error
+  static Result<Map<String, dynamic>, CalculatorError> getMyCalculationDataFromString(String input) {
+    // Validate empty input
+    if (input.trim().isEmpty) {
+      return Failure(ValidationError('Input values are required'));
+    }
+
+    // Parse using shared parser
     dynamic parsed = parseStrToNumOrList(input);
 
     if (parsed == "") {
-      return null;
+      return Failure(ParseError('Input values', input));
     }
 
+    // Convert to list
+    List<double> values;
     try {
-      List<double> values = parsed is double ? [parsed] : parsed;
-
-      if (values.length != 2) {  // Adjust based on your needs
-        return null;
-      }
-
-      return getMyCalculationData(values[0], values[1]);
+      values = parsed is double ? [parsed] : parsed as List<double>;
     } catch (e) {
-      return null;
+      return Failure(ParseError('Input values', input));
+    }
+
+    // Validate count
+    if (values.length != 2) {  // Adjust based on your needs
+      return Failure(ValidationError(
+        'Please enter exactly 2 values (e.g., "8.5 6.8")'
+      ));
+    }
+
+    // Validate positive values
+    if (values.any((v) => v <= 0)) {
+      return Failure(ValidationError('All values must be greater than zero'));
+    }
+
+    // Calculate
+    try {
+      final data = getMyCalculationData(values[0], values[1]);
+      return Success(data);
+    } catch (e) {
+      return Failure(CalculationError('Calculation failed: $e'));
     }
   }
 
@@ -110,10 +136,11 @@ class MyCalculator {
 ```
 
 **Key Points:**
-- Always return `Map<String, dynamic>` from `*Data()` methods
+- Always return `Result<Map<String, dynamic>, CalculatorError>` from `*DataFromString()` methods
+- Use `Success(data)` for valid calculations, `Failure(error)` for errors
+- Provide specific error messages using `ParseError`, `ValidationError`, or `CalculationError`
 - Include raw and rounded values when needed
-- Return `null` for invalid input
-- Keep backward-compatible string-returning methods
+- Validate input early with clear error messages
 
 ---
 
@@ -223,11 +250,13 @@ Create a new file: `app_my_calculator.dart`
 ```dart
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../core/result.dart';
 import '../../../services/calculator/my_calculator.dart';
 import '../../../services/calculator/shared/template_renderer.dart';
 import '../../../services/preferences/snippet_templates_service.dart';
 import '../../providers/snippet_templates_provider.dart';
 import '../../widgets/buttons.dart';
+import 'calculator_error_handler.dart';
 
 class AppMyCalculator extends ConsumerStatefulWidget {
   const AppMyCalculator({super.key});
@@ -248,30 +277,31 @@ class _AppMyCalculatorState extends ConsumerState<AppMyCalculator> {
   }
 
   Future<void> _calculate() async {
-    final data = MyCalculator.getMyCalculationDataFromString(_inputController.text);
+    final result = MyCalculator.getMyCalculationDataFromString(_inputController.text);
 
-    if (data == null) {
-      setState(() {
-        _outputController.text = '';
-      });
-      return;
-    }
+    switch (result) {
+      case Success(value: final data):
+        // Get template from service (await the future)
+        final service = ref.read(snippetTemplatesServiceProvider);
+        final template = await service.getTemplate(SnippetTemplatesService.myCalculatorId);
 
-    // Get template from service (await the future)
-    final service = ref.read(snippetTemplatesServiceProvider);
-    final template = await service.getTemplate(SnippetTemplatesService.myCalculatorId);
+        if (!mounted) return;
 
-    if (!mounted) return;
+        try {
+          final output = TemplateRenderer.render(template, data);
+          setState(() => _outputController.text = output);
+        } catch (e) {
+          setState(() => _outputController.text = 'Template error: $e');
+          if (mounted) {
+            CalculatorErrorHandler.showTemplateError(context);
+          }
+        }
 
-    try {
-      final result = TemplateRenderer.render(template, data);
-      setState(() {
-        _outputController.text = result;
-      });
-    } catch (e) {
-      setState(() {
-        _outputController.text = 'Template error: $e';
-      });
+      case Failure(error: final err):
+        setState(() => _outputController.text = '');
+        if (mounted) {
+          CalculatorErrorHandler.showCalculatorError(context, err);
+        }
     }
   }
 
@@ -363,12 +393,13 @@ class _AppMyCalculatorState extends ConsumerState<AppMyCalculator> {
 ```
 
 **UI Component Checklist:**
--  Use `ConsumerStatefulWidget` for Riverpod access
--  Make `_calculate()` async and await template loading
--  Check `if (!mounted) return;` after async operations
--  Handle null data gracefully
--  Use `TemplateRenderer.render()` with template and data
--  Provide clear input hints and labels
+- ✅ Use `ConsumerStatefulWidget` for Riverpod access
+- ✅ Make `_calculate()` async and await template loading
+- ✅ Check `if (!mounted) return;` after async operations
+- ✅ Use pattern matching on `Result` type with `switch` expression
+- ✅ Display specific errors via `CalculatorErrorHandler.showCalculatorError()`
+- ✅ Use `TemplateRenderer.render()` with template and data
+- ✅ Provide clear input hints and labels
 
 ---
 
@@ -485,11 +516,17 @@ class _AppMyCalculatorState extends ConsumerState<AppMyCalculator> {
   final TextEditingController _outputController = TextEditingController();
 
   Future<void> _calculate() async {
-    final data = MyCalculator.getMyCalculationData(
-      double.tryParse(_input1Controller.text) ?? 0,
-      double.tryParse(_input2Controller.text) ?? 0,
+    final result = MyCalculator.getMyCalculationDataFromString(
+      input1: _input1Controller.text,
+      input2: _input2Controller.text,
     );
-    // ... rest of calculation
+
+    switch (result) {
+      case Success(value: final data):
+        // ... render template
+      case Failure(error: final err):
+        CalculatorErrorHandler.showCalculatorError(context, err);
+    }
   }
 }
 ```
@@ -576,6 +613,19 @@ return {"myValue": 123};  //  Must match template
 {{myValue}}  //  Exact name match
 ```
 
+### Issue: Pattern match not exhaustive or missing case
+
+**Solution:** Ensure you handle both `Success` and `Failure` cases in your switch:
+```dart
+switch (result) {
+  case Success(value: final data):
+    // Handle success
+  case Failure(error: final err):
+    // Handle error - REQUIRED
+    CalculatorErrorHandler.showCalculatorError(context, err);
+}
+```
+
 ### Issue: Template not found error
 
 **Solutions:**
@@ -596,26 +646,32 @@ ref.invalidate(templateProvider(calculatorId));  //  Force refresh
 
 ## Best Practices
 
-1. **Always return Maps from `*Data()` methods** - This is the contract for template rendering
-2. **Provide both raw and rounded values** - Let users choose precision in templates
-3. **Include all input parameters in output Map** - Users might want to reference them
-4. **Use clear variable names** - `volume` is better than `v`, `diagnosis` better than `dx`
-5. **Validate input early** - Return `null` for invalid input, don't throw exceptions
-6. **Test with edge cases** - Zero values, negative numbers, very large numbers
-7. **Keep templates simple by default** - Users can customize if needed
-8. **Document available variables** - In `CalculatorMetadata.availableVariables`
-9. **Use meaningful sample data** - In `CalculatorMetadata.sampleData` for preview
-10. **Check `mounted` after async operations** - Prevent setState on disposed widgets
+1. **Always return Result types from `*DataFromString()` methods** - Use `Success(data)` or `Failure(error)` for type-safe error handling
+2. **Provide specific error messages** - Use `ParseError`, `ValidationError`, or `CalculationError` with clear messages
+3. **Validate input early** - Check for empty strings, invalid formats, and business rule violations
+4. **Provide both raw and rounded values** - Let users choose precision in templates
+5. **Include all input parameters in output Map** - Users might want to reference them
+6. **Use clear variable names** - `volume` is better than `v`, `diagnosis` better than `dx`
+7. **Use pattern matching in UI** - Exhaustive `switch` on Result ensures all cases are handled
+8. **Test with edge cases** - Zero values, negative numbers, very large numbers, empty inputs
+9. **Keep templates simple by default** - Users can customize if needed
+10. **Document available variables** - In `CalculatorMetadata.availableVariables`
+11. **Use meaningful sample data** - In `CalculatorMetadata.sampleData` for preview
+12. **Check `mounted` after async operations** - Prevent setState on disposed widgets
 
 ---
 
 ## Example: Complete Mini Calculator
 
-See `lib/services/calculator/volume_calculator.dart` and `lib/services/calculator/spine_calculator.dart` for full working examples.
+See these files for full working examples with Result type error handling:
+- `lib/services/calculator/volume_calculator.dart` - Single input with 3 dimensions
+- `lib/services/calculator/spine_calculator.dart` - Two inputs with list handling
+- `lib/services/calculator/adrenal_washout_calculator.dart` - Optional parameter with validation
 
 Quick reference:
-- **Prostate Volume**: Single input string  3 values  Map with 6 variables
-- **Spine Height Loss**: Two input strings  Lists  Map with 5 variables
+- **Prostate Volume**: Single input string → 3 values → Result<Map with 6 variables, CalculatorError>
+- **Spine Height Loss**: Two input strings → Lists → Result<Map with 5 variables, CalculatorError>
+- **Adrenal Washout**: Three inputs (one optional) → Numeric validation → Result<Map with 7 variables, CalculatorError>
 
 ---
 

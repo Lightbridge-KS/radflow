@@ -1,3 +1,5 @@
+import '../../core/result.dart';
+import 'calculator_error.dart';
 import 'shared/_statistics.dart';
 import 'shared/_parser.dart';
 
@@ -14,35 +16,68 @@ class SpineCalculator {
 
   /// Returns spine height loss data as a Map for template rendering from string inputs
   ///
-  /// Parameters
-  /// ----------
-  /// normalCm : String representation of normal vertebral heights
-  /// collapsedCM : String representation of collapsed vertebral heights
-  ///
-  /// Returns
-  /// -------
-  /// `Map<String, dynamic>?`
-  ///     Data map with keys: diagnosis, lossPercent, lossPercentRounded, normalMean, collapsedMean
-  ///     Returns null if input cannot be parsed or if loss is negative
-  static Map<String, dynamic>? getSpineHeightLossDataFromString({required String normalCm, required String collapsedCM}) {
+  /// Returns a [Result] containing either the calculated data or a specific error.
+  /// Possible errors: [ParseError], [ValidationError], [CalculationError].
+  static Result<Map<String, dynamic>, CalculatorError> getSpineHeightLossDataFromString({
+    required String normalCm,
+    required String collapsedCM,
+  }) {
+    // Check empty inputs
+    if (normalCm.trim().isEmpty) {
+      return Failure(ValidationError('Normal vertebral heights are required'));
+    }
+    if (collapsedCM.trim().isEmpty) {
+      return Failure(ValidationError('Collapsed vertebral heights are required'));
+    }
+
     // Parse normal heights
     dynamic normalParsed = parseStrToNumOrList(normalCm);
     if (normalParsed == "") {
-      return null;
+      return Failure(ParseError('Normal heights', normalCm));
     }
 
     // Parse collapsed heights
     dynamic collapsedParsed = parseStrToNumOrList(collapsedCM);
     if (collapsedParsed == "") {
-      return null;
+      return Failure(ParseError('Collapsed heights', collapsedCM));
     }
 
-    // Convert to lists for consistency
-    List<double> normalList = normalParsed is double ? [normalParsed] : normalParsed;
-    List<double> collapsedList = collapsedParsed is double ? [collapsedParsed] : collapsedParsed;
+    // Convert to lists
+    List<double> normalList = normalParsed is double ? [normalParsed] : normalParsed as List<double>;
+    List<double> collapsedList = collapsedParsed is double ? [collapsedParsed] : collapsedParsed as List<double>;
 
-    // Call existing method
-    return getSpineHeightLossData(normalCm: normalList, collapsedCM: collapsedList);
+    // Validate positive values
+    if (normalList.any((h) => h <= 0)) {
+      return Failure(ValidationError('Normal heights must be greater than zero'));
+    }
+    if (collapsedList.any((h) => h <= 0)) {
+      return Failure(ValidationError('Collapsed heights must be greater than zero'));
+    }
+
+    // Calculate means for validation
+    double normalMean = Statistics.mean(normalList);
+    double collapsedMean = Statistics.mean(collapsedList);
+
+    // Validate: collapsed cannot be > normal
+    if (collapsedMean > normalMean) {
+      return Failure(ValidationError(
+        'Collapsed height cannot be greater than normal height'
+      ));
+    }
+
+    // Calculate
+    final data = getSpineHeightLossData(
+      normalCm: normalList,
+      collapsedCM: collapsedList,
+    );
+
+    if (data == null) {
+      return Failure(ValidationError(
+        'Collapsed height cannot be greater than normal height'
+      ));
+    }
+
+    return Success(data);
   }
 
   /// Returns spine height loss data as a Map for template rendering
