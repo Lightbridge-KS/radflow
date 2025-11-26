@@ -26,8 +26,8 @@ import 'shared/_parser.dart';
 ///
 /// * [myCalculationFromString] - Parse string input and calculate
 /// * [myCalculation] - Calculate from numeric values
-/// * [myCalculationDataFromString] - Return data Map for template rendering from string
-/// * [myCalculationData] - Return data Map with all calculated values for template rendering
+/// * [getMyCalculationDataFromString] - Return data Map for template rendering from string
+/// * [getMyCalculationData] - Return data Map with all calculated values for template rendering
 class MyCalculator {
 
   /// Returns calculation data as a Map for template rendering from string input
@@ -40,7 +40,7 @@ class MyCalculator {
   ///
   /// * `Map<String, dynamic>?` - Data map with calculated values
   /// * null if input cannot be parsed
-  static Map<String, dynamic>? myCalculationDataFromString(String input) {
+  static Map<String, dynamic>? getMyCalculationDataFromString(String input) {
     dynamic parsed = parseStrToNumOrList(input);
 
     if (parsed == "") {
@@ -54,7 +54,7 @@ class MyCalculator {
         return null;
       }
 
-      return myCalculationData(values[0], values[1]);
+      return getMyCalculationData(values[0], values[1]);
     } catch (e) {
       return null;
     }
@@ -70,7 +70,7 @@ class MyCalculator {
   /// **Returns**
   ///
   /// * `Map<String, dynamic>` with keys for template variables
-  static Map<String, dynamic> myCalculationData(double value1, double value2) {
+  static Map<String, dynamic> getMyCalculationData(double value1, double value2) {
     // Perform calculations
     double result = value1 + value2;  // Example calculation
     String interpretation = result > 10 ? "High" : "Normal";
@@ -96,13 +96,13 @@ class MyCalculator {
   ///
   /// * `String` - Formatted result
   static String myCalculation(double value1, double value2) {
-    final data = myCalculationData(value1, value2);
+    final data = getMyCalculationData(value1, value2);
     return "${data['interpretation']} result: ${data['result']}";
   }
 
   /// String input version (backward compatibility)
   static String myCalculationFromString(String input) {
-    final data = myCalculationDataFromString(input);
+    final data = getMyCalculationDataFromString(input);
     if (data == null) return "";
     return "${data['interpretation']} result: ${data['result']}";
   }
@@ -248,7 +248,7 @@ class _AppMyCalculatorState extends ConsumerState<AppMyCalculator> {
   }
 
   Future<void> _calculate() async {
-    final data = MyCalculator.myCalculationDataFromString(_inputController.text);
+    final data = MyCalculator.getMyCalculationDataFromString(_inputController.text);
 
     if (data == null) {
       setState(() {
@@ -485,7 +485,7 @@ class _AppMyCalculatorState extends ConsumerState<AppMyCalculator> {
   final TextEditingController _outputController = TextEditingController();
 
   Future<void> _calculate() async {
-    final data = MyCalculator.myCalculationData(
+    final data = MyCalculator.getMyCalculationData(
       double.tryParse(_input1Controller.text) ?? 0,
       double.tryParse(_input2Controller.text) ?? 0,
     );
@@ -519,7 +519,7 @@ DropdownButton<String>(
 ### Complex Data Structures
 
 ```dart
-static Map<String, dynamic> myCalculationData(...) {
+static Map<String, dynamic> getMyCalculationData(...) {
   return {
     "result": 15,
     "items": [  // Lists for Mustache iteration

@@ -15,8 +15,8 @@ import 'shared/_parser.dart';
 ///
 /// * [prostateVolumeFromString] - Parse string input and calculate prostate volume with diagnosis
 /// * [prostateVolume] - Calculate prostate volume and diagnosis from numeric dimensions
-/// * [prostateVolumeDataFromString] - Parse string input and return data Map for template rendering
-/// * [prostateVolumeData] - Return data Map with all calculated values for template rendering
+/// * [getProstateVolumeDataFromString] - Parse string input and return data Map for template rendering
+/// * [getProstateVolumeData] - Return data Map with all calculated values for template rendering
 /// * [ellipsoidVolume] - Calculate volume of an ellipsoid from 3 perpendicular diameters
 ///
 /// **Example**
@@ -36,66 +36,6 @@ import 'shared/_parser.dart';
 /// ```
 class VolumeCalculator {
 
-  /// Calculates prostate volume and provides diagnostic assessment from string input.
-  ///
-  /// Parses a string containing 3 perpendicular diameters (in cm) and returns
-  /// a formatted diagnostic statement with volume and size classification.
-  ///
-  /// **Parameters**
-  ///
-  /// * `input` : String
-  ///     Three perpendicular diameters in cm, separated by commas and/or spaces.
-  ///     Example: "4.5, 3.2, 3.8" or "4.5 3.2 3.8"
-  ///
-  /// **Returns**
-  ///
-  /// * `String` - Diagnostic statement with volume (ml) and size assessment
-  ///     (Normal/Prominent/Enlarged)
-  /// * Empty string ("") if input cannot be parsed or doesn't contain exactly 3 dimensions
-  ///
-  /// **Diagnostic Criteria**
-  ///
-  /// * < 25 ml: Normal
-  /// * 25 ml: Normal or Prominent
-  /// * 25-40 ml: Prominent
-  /// * 40 ml: Prominent or Enlarged
-  /// * > 40 ml: Enlarged
-  ///
-  /// **Examples**
-  ///
-  /// ```dart
-  /// prostateVolumeFromString("4.5, 3.2, 3.8");
-  /// // Returns: "Prominent size of prostate gland, measuring 29 ml in volume."
-  ///
-  /// prostateVolumeFromString("3.0 2.5 2.8");
-  /// // Returns: "Normal size of prostate gland, measuring 11 ml in volume."
-  ///
-  /// prostateVolumeFromString("invalid");
-  /// // Returns: ""
-  /// ```
-  static String prostateVolumeFromString(String input) {
-    dynamic parsed = parseStrToNumOrList(input);
-    
-    // Handle empty string return from parser
-    if (parsed == "") {
-      return "";
-    }
-    
-    try {
-      // Convert single value to list for consistency
-      List<double> dim = parsed is double ? [parsed] : parsed;
-      
-      // Validate exactly 3 dimensions
-      if (dim.length != 3) {
-        return "";
-      }
-      
-      return prostateVolume(dim[0], dim[1], dim[2]);
-    } catch (e) {
-      return "";
-    }
-  }
-
   /// Returns prostate volume data as a Map for template rendering from string input.
   ///
   /// Parses a string containing 3 perpendicular diameters (in cm) and returns
@@ -114,10 +54,10 @@ class VolumeCalculator {
   /// **Examples**
   ///
   /// ```dart
-  /// var data = prostateVolumeDataFromString("4.5, 3.2, 3.8");
+  /// var data = getProstateVolumeDataFromString("4.5, 3.2, 3.8");
   /// // Returns: {diagnosis: "Prominent", volume: 29, volumeRaw: 28.6..., d1: 4.5, d2: 3.2, d3: 3.8}
   /// ```
-  static Map<String, dynamic>? prostateVolumeDataFromString(String input) {
+  static Map<String, dynamic>? getProstateVolumeDataFromString(String input) {
     dynamic parsed = parseStrToNumOrList(input);
 
     if (parsed == "") {
@@ -131,7 +71,7 @@ class VolumeCalculator {
         return null;
       }
 
-      return prostateVolumeData(dim[0], dim[1], dim[2]);
+      return getProstateVolumeData(dim[0], dim[1], dim[2]);
     } catch (e) {
       return null;
     }
@@ -159,10 +99,10 @@ class VolumeCalculator {
   /// **Examples**
   ///
   /// ```dart
-  /// var data = prostateVolumeData(4.5, 3.2, 3.8);
+  /// var data = getProstateVolumeData(4.5, 3.2, 3.8);
   /// // Returns: {diagnosis: "Prominent", volume: 29, volumeRaw: 28.6..., d1: 4.5, d2: 3.2, d3: 3.8}
   /// ```
-  static Map<String, dynamic> prostateVolumeData(double d1, double d2, double d3) {
+  static Map<String, dynamic> getProstateVolumeData(double d1, double d2, double d3) {
     double volumeRaw = ellipsoidVolume(d1, d2, d3);
     int volume = volumeRaw.round();
     String diagnosis;
@@ -226,7 +166,7 @@ class VolumeCalculator {
   /// // Returns: "Enlarged size of prostate gland, measuring 72 ml in volume."
   /// ```
   static String prostateVolume(double d1, double d2, double d3) {
-    final data = prostateVolumeData(d1, d2, d3);
+    final data = getProstateVolumeData(d1, d2, d3);
     return "${data['diagnosis']} size of prostate gland, measuring ${data['volume']} ml in volume.";
   }
 

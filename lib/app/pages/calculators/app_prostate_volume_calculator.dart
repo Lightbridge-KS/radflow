@@ -25,7 +25,7 @@ class _AppProstateVolumeCalculatorState extends ConsumerState<AppProstateVolumeC
   }
 
   Future<void> _calculate() async {
-    final data = VolumeCalculator.prostateVolumeDataFromString(_inputController.text);
+    final data = VolumeCalculator.getProstateVolumeDataFromString(_inputController.text);
 
     if (data == null) {
       setState(() {

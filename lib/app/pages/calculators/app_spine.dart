@@ -27,7 +27,7 @@ class _AppSpineCalculatorState extends ConsumerState<AppSpineCalculator> {
   }
 
   Future<void> _calculate() async {
-    final data = SpineCalculator.spineHeightLossDataFromString(
+    final data = SpineCalculator.getSpineHeightLossDataFromString(
       normalCm: _normalController.text,
       collapsedCM: _collapsedController.text,
     );

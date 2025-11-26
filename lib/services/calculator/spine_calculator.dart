@@ -7,46 +7,9 @@ import 'shared/_parser.dart';
 ///
 /// * [spineHeightLossFromString] - Calculate spine height loss from string inputs
 /// * [spineHeightLoss] - Calculate spine height loss from numeric lists
-/// * [spineHeightLossDataFromString] - Return data Map for template rendering from string inputs
-/// * [spineHeightLossData] - Return data Map with all calculated values for template rendering
+/// * [getSpineHeightLossDataFromString] - Return data Map for template rendering from string inputs
+/// * [getSpineHeightLossData] - Return data Map with all calculated values for template rendering
 class SpineCalculator {
-  
-  /// Calculates spine height loss from string inputs
-  ///
-  /// Parameters
-  /// ----------
-  /// normalCm : String representation of normal vertebral heights
-  /// collapsedCM : String representation of collapsed vertebral heights
-  ///
-  /// Returns
-  /// -------
-  /// String
-  ///     Formatted string with compression fracture diagnosis and height loss percentage
-  ///
-  /// Throws
-  /// ------
-  /// ArgumentError
-  ///     If string inputs cannot be parsed to valid numbers
-  static String spineHeightLossFromString({required String normalCm, required String collapsedCM}) {
-    // Parse normal heights
-    dynamic normalParsed = parseStrToNumOrList(normalCm);
-    if (normalParsed == "") {
-      return "";
-    }
-    
-    // Parse collapsed heights
-    dynamic collapsedParsed = parseStrToNumOrList(collapsedCM);
-    if (collapsedParsed == "") {
-      return "";
-    }
-    
-    // Convert to lists for consistency
-    List<double> normalList = normalParsed is double ? [normalParsed] : normalParsed;
-    List<double> collapsedList = collapsedParsed is double ? [collapsedParsed] : collapsedParsed;
-    
-    // Call existing method
-    return spineHeightLoss(normalCm: normalList, collapsedCM: collapsedList);
-  }
 
 
   /// Returns spine height loss data as a Map for template rendering from string inputs
@@ -61,7 +24,7 @@ class SpineCalculator {
   /// `Map<String, dynamic>?`
   ///     Data map with keys: diagnosis, lossPercent, lossPercentRounded, normalMean, collapsedMean
   ///     Returns null if input cannot be parsed or if loss is negative
-  static Map<String, dynamic>? spineHeightLossDataFromString({required String normalCm, required String collapsedCM}) {
+  static Map<String, dynamic>? getSpineHeightLossDataFromString({required String normalCm, required String collapsedCM}) {
     // Parse normal heights
     dynamic normalParsed = parseStrToNumOrList(normalCm);
     if (normalParsed == "") {
@@ -79,7 +42,7 @@ class SpineCalculator {
     List<double> collapsedList = collapsedParsed is double ? [collapsedParsed] : collapsedParsed;
 
     // Call existing method
-    return spineHeightLossData(normalCm: normalList, collapsedCM: collapsedList);
+    return getSpineHeightLossData(normalCm: normalList, collapsedCM: collapsedList);
   }
 
   /// Returns spine height loss data as a Map for template rendering
@@ -99,7 +62,7 @@ class SpineCalculator {
   ///     - normalMean : double - Mean of normal heights
   ///     - collapsedMean : double - Mean of collapsed heights
   ///     Returns null if collapsed height is greater than normal height (negative loss)
-  static Map<String, dynamic>? spineHeightLossData({required List<double> normalCm, required List<double> collapsedCM}) {
+  static Map<String, dynamic>? getSpineHeightLossData({required List<double> normalCm, required List<double> collapsedCM}) {
     // Calculate mean if input as list
     double normalMean = Statistics.mean(normalCm);
     double collapsedMean = Statistics.mean(collapsedCM);
@@ -138,14 +101,14 @@ class SpineCalculator {
   /// ------
   /// ArgumentError
   ///     If collapsed height is greater than normal height (negative loss)
-  static String spineHeightLoss({required List<double> normalCm, required List<double> collapsedCM}) {
-    final data = spineHeightLossData(normalCm: normalCm, collapsedCM: collapsedCM);
-    if (data == null) {
-      return "";
-    }
+  // static String spineHeightLoss({required List<double> normalCm, required List<double> collapsedCM}) {
+  //   final data = spineHeightLossData(normalCm: normalCm, collapsedCM: collapsedCM);
+  //   if (data == null) {
+  //     return "";
+  //   }
 
-    return "${data['diagnosis']} compression fracture (${data['lossPercentRounded']}% height loss).";
-  }
+  //   return "${data['diagnosis']} compression fracture (${data['lossPercentRounded']}% height loss).";
+  // }
 
   /// Determines compression fracture severity based on height loss percentage
   ///
