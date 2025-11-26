@@ -1,41 +1,63 @@
 import 'package:flutter/material.dart';
-import '../../../services/calculator/spine_calculator.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../core/result.dart';
+import '../../../services/calculator/volume_calculator.dart';
+import '../../../services/calculator/shared/template_renderer.dart';
+import '../../../services/preferences/snippet_templates_service.dart';
+import '../../providers/snippet_templates_provider.dart';
 import '../../widgets/buttons.dart';
+import 'calculator_error_handler.dart';
 
-class AppSpineCalculator extends StatefulWidget {
-  const AppSpineCalculator({super.key});
+class AppProstateVolumeCalculator extends ConsumerStatefulWidget {
+  const AppProstateVolumeCalculator({super.key});
 
   @override
-  State<AppSpineCalculator> createState() => _AppSpineCalculatorState();
+  ConsumerState<AppProstateVolumeCalculator> createState() => _AppProstateVolumeCalculatorState();
 }
 
-class _AppSpineCalculatorState extends State<AppSpineCalculator> {
-  final TextEditingController _normalController = TextEditingController();
-  final TextEditingController _collapsedController = TextEditingController();
+class _AppProstateVolumeCalculatorState extends ConsumerState<AppProstateVolumeCalculator> {
+  final TextEditingController _inputController = TextEditingController();
   final TextEditingController _outputController = TextEditingController();
 
   @override
   void dispose() {
-    _normalController.dispose();
-    _collapsedController.dispose();
+    _inputController.dispose();
     _outputController.dispose();
     super.dispose();
   }
 
-  void _calculate() {
-    final result = SpineCalculator.spineHeightLossFromString(
-      normalCm: _normalController.text,
-      collapsedCM: _collapsedController.text,
-    );
-    setState(() {
-      _outputController.text = result;
-    });
+  Future<void> _calculate() async {
+    final result = VolumeCalculator.getProstateVolumeDataFromString(_inputController.text);
+
+    switch (result) {
+      case Success(value: final data):
+        // Render template
+        final service = ref.read(snippetTemplatesServiceProvider);
+        final template = await service.getTemplate(SnippetTemplatesService.prostateVolumeId);
+
+        if (!mounted) return;
+
+        try {
+          final output = TemplateRenderer.render(template, data);
+          setState(() => _outputController.text = output);
+        } catch (e) {
+          setState(() => _outputController.text = 'Template error: $e');
+          if (mounted) {
+            CalculatorErrorHandler.showTemplateError(context);
+          }
+        }
+
+      case Failure(error: final err):
+        setState(() => _outputController.text = '');
+        if (mounted) {
+          CalculatorErrorHandler.showCalculatorError(context, err);
+        }
+    }
   }
 
   void _resetInputs() {
     setState(() {
-      _normalController.clear();
-      _collapsedController.clear();
+      _inputController.clear();
       _outputController.clear();
     });
   }
@@ -46,7 +68,7 @@ class _AppSpineCalculatorState extends State<AppSpineCalculator> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Spine Height Loss',
+          'Prostate Volume',
           style: Theme.of(context).textTheme.headlineSmall?.copyWith(
             fontWeight: FontWeight.bold,
           ),
@@ -60,34 +82,24 @@ class _AppSpineCalculatorState extends State<AppSpineCalculator> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   TextField(
-                    controller: _normalController,
+                    controller: _inputController,
                     decoration: const InputDecoration(
-                      labelText: 'Input: Normal height (cm)',
-                      hintText: 'Normal height in cm',
-                      border: OutlineInputBorder(),
-                    ),
-                    onSubmitted: (_) => _calculate(),
-                  ),
-                  const SizedBox(height: 12),
-                  TextField(
-                    controller: _collapsedController,
-                    decoration: const InputDecoration(
-                      labelText: 'Input: Collapsed height (cm)',
-                      hintText: 'Collapsed height in cm',
+                      labelText: 'Input: Diameters in 3 planes (cm)',
+                      hintText: 'e.g. 4.4 4.5 4.6',
                       border: OutlineInputBorder(),
                     ),
                     onSubmitted: (_) => _calculate(),
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Input height in centimeter and use two values to calculate mean height, separated by spaces or comma (e.g. 10 12)',
+                    'Input perpendicular diameters (cm) in 3 planes, separated by spaces or comma (e.g. 4.4 4.5 4.6)',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: Colors.grey,
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    'Mild (20-25%), Moderate (25-40%), Severe (>40%)',
+                    'Normal (<25 ml), Prominent (25-40 ml), Enlarged (>40 ml)',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: Colors.grey,
                     ),
@@ -103,7 +115,7 @@ class _AppSpineCalculatorState extends State<AppSpineCalculator> {
                   TextField(
                     controller: _outputController,
                     decoration: const InputDecoration(
-                      labelText: 'Height loss snippet',
+                      labelText: 'Prostate volume snippet',
                       border: OutlineInputBorder(),
                     ),
                     readOnly: false,

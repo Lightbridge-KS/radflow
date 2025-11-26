@@ -18,7 +18,7 @@ A cross-platform (web and desktop) Flutter app to streamline radiology workflow 
 - Navigation structure with drawer and 4 routes (/, /design/er, /calc/general, /settings)
 - Dynamic AppBar with persistent shell layout
   - Blended gradient AppBar on HomeScreen, inversePrimary on other screens
-- Theme switcher (System/Light/Dark) with SharedPreferences persistence
+- Theme switcher (System/Light/Dark) with SharedPreferencesAsync persistence
 - Custom Material 3 theme with light/dark/contrast variants
 - HomeScreen: Modern Material 3 welcome page
   - Hero section with gradient background and decorative dots
@@ -29,25 +29,37 @@ A cross-platform (web and desktop) Flutter app to streamline radiology workflow 
   - Mustache-based template generation (lib/services/design/designer/)
   - Responsive layout with input form and output display
   - Shared UI components (ThreeLevelDropdowns, GenerateButton, CopyButton)
+- Calculators: Prostate Volume, Spine Height Loss, Adrenal CT Washout
+  - Business logic returns data Maps for template rendering
+  - Customizable Mustache templates (default + user override)
+  - Settings → Calculator Templates editor with live preview
+  - SharedPreferencesAsync persistence for custom templates
+  - Template service with metadata (available variables, sample data)
+  - Type-safe error handling with Result<T, E> pattern (sealed classes)
+  - Specific validation errors displayed via SnackBar (ParseError, ValidationError, CalculationError)
 - App icons configured via flutter_launcher_icons (web, Windows, macOS)
 - CI/CD: GitHub Actions workflows for web (no CDN), Windows, and macOS builds
-
-**Pending:**
-- Feature content for calculators
 
 **Structure:**
 ```
 lib/
+├── core/                     # result.dart (Result<T,E> sealed class)
 ├── app/
 │   ├── pages/
-│   │   └── designer/       # DesignER screen (implemented)
-│   ├── widgets/            # Reusable UI components
-│   ├── providers/          # theme_provider
-│   ├── themes/             # Material 3 theme configurations
+│   │   ├── designer/         # DesignER screen
+│   │   ├── calculators/      # Calculator UI components + error handler
+│   │   └── settings/         # Calculator template editor
+│   ├── widgets/              # Reusable UI components
+│   ├── providers/            # theme_provider, snippet_templates_provider
+│   ├── themes/               # Material 3 theme configurations
 │   └── router.dart
 ├── services/
-│   └── design/designer/    # Protocol generation business logic
-└── fonts/Roboto/           # Local Roboto font files (offline)
+│   ├── calculator/           # Calculator business logic + calculator_error.dart
+│   │   ├── shared/           # template_renderer, parser, statistics
+│   │   └── templates/        # Default Mustache templates
+│   ├── design/designer/      # Protocol generation business logic
+│   └── preferences/          # snippet_templates_service
+└── fonts/Roboto/             # Local Roboto font files (offline)
 ```
 
 ## Tech Stack
