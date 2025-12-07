@@ -10,6 +10,9 @@ icons:
 build-web-local:
 	flutter build web --no-web-resources-cdn --release
 
+build-web-local-wasm:
+	flutter build web --wasm --no-web-resources-cdn --release 
+
 serve-web-local:
 	cd build/web && python -m http.server 9000
 # Default target (runs when you just type 'make')
