@@ -29,7 +29,7 @@ A cross-platform (web and desktop) Flutter app to streamline radiology workflow 
   - Mustache-based template generation (lib/services/design/designer/)
   - Responsive layout with input form and output display
   - Shared UI components (ThreeLevelDropdowns, GenerateButton, CopyButton)
-- Calculators: Prostate Volume, Spine Height Loss, Adrenal CT Washout
+- Calculators: Prostate Volume, Spine Height Loss, Adrenal CT Washout, Liver Iron Concentration (LIC)
   - Business logic returns data Maps for template rendering
   - Customizable Mustache templates (default + user override)
   - Settings → Calculator Templates editor with live preview
@@ -37,6 +37,7 @@ A cross-platform (web and desktop) Flutter app to streamline radiology workflow 
   - Template service with metadata (available variables, sample data)
   - Type-safe error handling with Result<T, E> pattern (sealed classes)
   - Specific validation errors displayed via SnackBar (ParseError, ValidationError, CalculationError)
+  - LaTeX formula rendering with clickable citation links (LIC calculator)
 - App icons configured via flutter_launcher_icons (web, Windows, macOS)
 - CI/CD: GitHub Actions workflows for web (no CDN), Windows, and macOS builds
 
@@ -49,7 +50,7 @@ lib/
 │   │   ├── designer/         # DesignER screen
 │   │   ├── calculators/      # Calculator UI components + error handler
 │   │   └── settings/         # Calculator template editor
-│   ├── widgets/              # Reusable UI components
+│   ├── widgets/              # Reusable UI components (buttons, citation_url_launcher)
 │   ├── providers/            # theme_provider, snippet_templates_provider
 │   ├── themes/               # Material 3 theme configurations
 │   └── router.dart
@@ -70,6 +71,8 @@ lib/
 - **UI:** Material 3 with custom blue theme
 - **Fonts:** Local Roboto (10 weights + italic variants)
 - **Templating:** mustachex ^1.0.0
+- **LaTeX Rendering:** flutter_math_fork ^0.7.2
+- **URL Launcher:** url_launcher ^6.3.1
 - **Utils:** intl ^0.20.2
 - **Desktop:** window_manager ^0.4.4
 

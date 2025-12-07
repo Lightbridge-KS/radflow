@@ -62,6 +62,16 @@ class AppDrawer extends StatelessWidget {
                   Navigator.pop(context);
                 },
               ),
+              ListTile(
+                leading: Icon(Icons.circle, size: 12),
+                title: Text(ScreenInfo.calcLiver.title),
+                selected: currentLocation == Routes.calculatorLiver,
+                contentPadding: EdgeInsets.only(left: 72),
+                onTap: () {
+                  context.go(Routes.calculatorLiver);
+                  Navigator.pop(context);
+                },
+              ),
             ],
           ),
           ListTile(

@@ -4,6 +4,7 @@ import 'pages/home_screen.dart';
 import 'pages/settings_screen.dart';
 import 'pages/designer/designer_screen.dart';
 import 'pages/calculators/calculator_abdomen_screen.dart';
+import 'pages/calculators/calculator_liver_screen.dart';
 import 'pages/settings/calculator_template_editor_screen.dart';
 import 'widgets/shell_layout.dart';
 
@@ -12,6 +13,7 @@ abstract class Routes {
   static const String home = '/';
   static const String designER = '/design/er';
   static const String calculatorAbdomen = '/calc/abdomen';
+  static const String calculatorLiver = '/calc/liver';
   static const String settings = '/settings';
   static const String calculatorTemplates = '/settings/templates/calc';
 }
@@ -43,6 +45,13 @@ final class AppRouter {
             pageBuilder: (context, state) => NoTransitionPage(
               key: state.pageKey,
               child: const CalculatorAbdomenScreen(),
+            ),
+          ),
+          GoRoute(
+            path: Routes.calculatorLiver,
+            pageBuilder: (context, state) => NoTransitionPage(
+              key: state.pageKey,
+              child: const CalculatorLiverScreen(),
             ),
           ),
           GoRoute(

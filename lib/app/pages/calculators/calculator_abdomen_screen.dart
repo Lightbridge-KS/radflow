@@ -17,7 +17,7 @@ class CalculatorAbdomenScreen extends StatelessWidget {
             SizedBox(height: 32),
             AppSpineCalculator(), 
             SizedBox(height: 32),
-            AppAdrenalWashoutCalculator(), // [TODO]
+            AppAdrenalWashoutCalculator(),
           ],
         ),
       );

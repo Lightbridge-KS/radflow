@@ -20,6 +20,7 @@ class ShellLayout extends StatelessWidget {
       Routes.home: 'RadFlow',
       Routes.designER: ScreenInfo.designER.title, 
       Routes.calculatorAbdomen: 'Abdomen Calculator',
+      Routes.calculatorLiver: "Liver Calculator", 
       Routes.settings: 'Settings',
     };
 

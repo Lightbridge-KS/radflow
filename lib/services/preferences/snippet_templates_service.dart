@@ -51,6 +51,7 @@ class SnippetTemplatesService {
   static const String prostateVolumeId = 'prostate_volume';
   static const String spineHeightLossId = 'spine_height_loss';
   static const String adrenalWashoutId = 'adrenal_washout';
+  static const String licId = 'lic';
 
   /// Gets metadata about available variables for a calculator
   ///
@@ -134,6 +135,33 @@ class SnippetTemplatesService {
             'apw': 44.4,
             'rpwOneDecimal': '40.0',
             'apwOneDecimal': '44.4',
+          },
+        );
+      case licId:
+        return CalculatorMetadata(
+          id: licId,
+          name: 'Liver Iron Concentration (LIC)',
+          availableVariables: [
+            VariableInfo('t2StarMsLtLobe', 'T2* value of left lobe in ms'),
+            VariableInfo('t2StarMsRtAntLobe', 'T2* value of right anterior lobe in ms'),
+            VariableInfo('t2StarMsRtPostLobe', 'T2* value of right posterior lobe in ms'),
+            VariableInfo('licLtLobe', 'Raw LIC of left lobe (mg Fe/g dry weight)'),
+            VariableInfo('licRtAntLobe', 'Raw LIC of right anterior lobe (mg Fe/g dry weight)'),
+            VariableInfo('licRtPostLobe', 'Raw LIC of right posterior lobe (mg Fe/g dry weight)'),
+            VariableInfo('licLtLobeTwoDecimal', 'LIC left lobe formatted to 2 decimals'),
+            VariableInfo('licRtAntLobeTwoDecimal', 'LIC right anterior lobe formatted to 2 decimals'),
+            VariableInfo('licRtPostLobeTwoDecimal', 'LIC right posterior lobe formatted to 2 decimals'),
+          ],
+          sampleData: {
+            't2StarMsLtLobe': 15.5,
+            't2StarMsRtAntLobe': 14.2,
+            't2StarMsRtPostLobe': 16.8,
+            'licLtLobe': 1.845,
+            'licRtAntLobe': 2.103,
+            'licRtPostLobe': 1.672,
+            'licLtLobeTwoDecimal': '1.85',
+            'licRtAntLobeTwoDecimal': '2.10',
+            'licRtPostLobeTwoDecimal': '1.67',
           },
         );
       default:
@@ -249,7 +277,7 @@ class SnippetTemplatesService {
   ///
   /// * `List<String>` - List of all calculator identifiers
   List<String> getAllCalculatorIds() {
-    return [prostateVolumeId, spineHeightLossId, adrenalWashoutId];
+    return [prostateVolumeId, spineHeightLossId, adrenalWashoutId, licId];
   }
 
   /// Loads the default template from assets
