@@ -1,0 +1,11 @@
+TI-RADS Findings:
+
+{{#nodules}}
+- (Nodule {{id}}) [{{location}}] {{^isMarginExtra}}{{marginDesc}}{{/isMarginExtra}} {{echogenicityDesc}} {{compositionDesc}} nodule{{#isMarginExtra}} with {{marginDesc}}{{/isMarginExtra}}{{#isShapeTaller}} with {{shapeDesc}} feature{{/isShapeTaller}}{{^isEchogenicFociNoneComet}} with {{echogenicFociDesc}}{{/isEchogenicFociNoneComet}}{{#hasSizeProvided}}, measuring {{sizeInCm}} cm{{/hasSizeProvided}}; {{tiradsLevel}}.{{^noActionNeeded}} {{recommendationSummary}}.{{/noActionNeeded}}
+{{/nodules}}
+{{#hasMultipleNodules}}
+
+Summary: 
+
+- Highest category: {{highestTiradsLevel}} ({{highestTiradsLevelDesc}})
+{{/hasMultipleNodules}}

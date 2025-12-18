@@ -52,6 +52,7 @@ class SnippetTemplatesService {
   static const String spineHeightLossId = 'spine_height_loss';
   static const String adrenalWashoutId = 'adrenal_washout';
   static const String licId = 'lic';
+  static const String tiradsId = 'tirads';
 
   /// Gets metadata about available variables for a calculator
   ///
@@ -162,6 +163,74 @@ class SnippetTemplatesService {
             'licLtLobeTwoDecimal': '1.85',
             'licRtAntLobeTwoDecimal': '2.10',
             'licRtPostLobeTwoDecimal': '1.67',
+          },
+        );
+      case tiradsId:
+        return CalculatorMetadata(
+          id: tiradsId,
+          name: 'TI-RADS Calculator',
+          availableVariables: [
+            // Overall assessment
+            VariableInfo('totalNodules', 'Total number of nodules assessed'),
+            VariableInfo('hasMultipleNodules', 'True if more than one nodule'),
+            VariableInfo('hasSingleNodule', 'True if exactly one nodule'),
+            VariableInfo('highestTiradsLevel', 'Highest TR level among all nodules'),
+            VariableInfo('highestTiradsLevelDesc', 'Description of highest TR level'),
+            VariableInfo('summary', 'Overall summary for multiple nodules'),
+            // Nodule list
+            VariableInfo('nodules', 'List of nodule assessments (use {{#nodules}}...{{/nodules}})'),
+            VariableInfo('nodules[].id', 'Nodule ID'),
+            VariableInfo('nodules[].location', 'Nodule location'),
+            VariableInfo('nodules[].sizeInCm', 'Nodule size in cm (if provided)'),
+            VariableInfo('nodules[].tiradsLevel', 'TR level (TR1-TR5)'),
+            VariableInfo('nodules[].tiradsLevelDesc', 'TR level description'),
+            VariableInfo('nodules[].pointsTotal', 'Total points'),
+            // Category descriptions
+            VariableInfo('nodules[].compositionDesc', 'Composition description'),
+            VariableInfo('nodules[].echogenicityDesc', 'Echogenicity description'),
+            VariableInfo('nodules[].shapeDesc', 'Shape description (empty if wider-than-tall)'),
+            VariableInfo('nodules[].marginDesc', 'Margin description'),
+            VariableInfo('nodules[].echogenicFociDesc', 'Echogenic foci description'),
+            VariableInfo('nodules[].recommendationSummary', 'FNA/follow-up recommendation'),
+            // Boolean flags for conditional rendering
+            VariableInfo('nodules[].hasSizeProvided', 'True if size was provided'),
+            VariableInfo('nodules[].isShapeTaller', 'True if taller-than-wide'),
+            VariableInfo('nodules[].isMarginExtra', 'True if extrathyroidal extension'),
+            VariableInfo('nodules[].isEchogenicFociNoneComet', 'True if no echogenic foci'),
+            VariableInfo('nodules[].noActionNeeded', 'True if no FNA needed (TR1/TR2)'),
+            VariableInfo('nodules[].needsFNA', 'True if FNA is recommended'),
+            VariableInfo('nodules[].needsFollowUp', 'True if follow-up is recommended'),
+          ],
+          sampleData: {
+            'totalNodules': 2,
+            'hasMultipleNodules': true,
+            'hasSingleNodule': false,
+            'highestTiradsLevel': 'TR4',
+            'highestTiradsLevelDesc': 'Moderately Suspicious',
+            'summary': '2 nodules evaluated. Highest category: TR4 (Moderately Suspicious)',
+            'nodules': [
+              {
+                'id': 1,
+                'location': 'Right lobe, mid',
+                'sizeInCm': 1.8,
+                'tiradsLevel': 'TR4',
+                'tiradsLevelDesc': 'Moderately Suspicious',
+                'pointsTotal': 5,
+                'compositionDesc': 'solid',
+                'echogenicityDesc': 'hypoechoic',
+                'shapeDesc': '',
+                'marginDesc': 'smooth',
+                'echogenicFociDesc': 'macrocalcification',
+                'recommendationSummary': 'FNA is recommended',
+                'hasSizeProvided': true,
+                'isShapeTaller': false,
+                'isMarginExtra': false,
+                'isEchogenicFociNoneComet': false,
+                'noActionNeeded': false,
+                'needsFNA': true,
+                'needsFollowUp': false,
+              },
+            ],
           },
         );
       default:
@@ -277,7 +346,7 @@ class SnippetTemplatesService {
   ///
   /// * `List<String>` - List of all calculator identifiers
   List<String> getAllCalculatorIds() {
-    return [prostateVolumeId, spineHeightLossId, adrenalWashoutId, licId];
+    return [prostateVolumeId, spineHeightLossId, adrenalWashoutId, licId, tiradsId];
   }
 
   /// Loads the default template from assets
