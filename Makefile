@@ -11,6 +11,10 @@ run-web-local:
 	--dart-define=VERSION=0.x.y \
 	--dart-define=SHA_HASH=abcdef
 
+build-web:
+	flutter build web --release \
+	--dart-define=VERSION=0.3.1 \
+	--dart-define=SHA_HASH=abcdef
 
 build-web-local:
 	flutter build web --no-web-resources-cdn --release \
