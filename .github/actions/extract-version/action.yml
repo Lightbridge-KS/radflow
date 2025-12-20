@@ -24,7 +24,7 @@ runs:
           VERSION="${VERSION#v}"
         else
           # Fallback for branch builds
-          VERSION="dev-SHA_HASH"
+          VERSION="dev-${SHA_HASH}"
         fi
 
         echo "version=$VERSION" >> $GITHUB_OUTPUT
