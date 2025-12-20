@@ -74,9 +74,10 @@ jobs:
 
       # Build Windows application
       - name: Build Windows application
-        run: flutter build windows --release `
-          --dart-define=VERSION=${{ steps.version.outputs.version }} `
-          --dart-define=SHA_HASH=${{ steps.version.outputs.sha-hash }}
+        run: |
+          flutter build windows --release `
+            --dart-define=VERSION=${{ steps.version.outputs.version }} `
+            --dart-define=SHA_HASH=${{ steps.version.outputs.sha-hash }}
 
       # Debug: List all files in the Release directory
       - name: List build contents

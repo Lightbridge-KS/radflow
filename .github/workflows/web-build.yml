@@ -64,9 +64,10 @@ jobs:
 
       # Build web application
       - name: Build web application
-        run: flutter build web --no-web-resources-cdn --release \
-          --dart-define=VERSION=${{ steps.version.outputs.version }} \
-          --dart-define=SHA_HASH=${{ steps.version.outputs.sha-hash }}
+        run: |
+          flutter build web --no-web-resources-cdn --release \
+            --dart-define=VERSION=${{ steps.version.outputs.version }} \
+            --dart-define=SHA_HASH=${{ steps.version.outputs.sha-hash }}
 
       # Package web app
       - name: Package web app

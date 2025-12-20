@@ -59,9 +59,10 @@ jobs:
 
       # Build macOS application
       - name: Build macOS application
-        run: flutter build macos --release \
-          --dart-define=VERSION=${{ steps.version.outputs.version }} \
-          --dart-define=SHA_HASH=${{ steps.version.outputs.sha-hash }}
+        run: |
+          flutter build macos --release \
+            --dart-define=VERSION=${{ steps.version.outputs.version }} \
+            --dart-define=SHA_HASH=${{ steps.version.outputs.sha-hash }}
 
       # Package macOS app
       - name: Package macOS app
