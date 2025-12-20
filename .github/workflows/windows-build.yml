@@ -55,18 +55,16 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
-      # Extract version from pubspec.yaml for the installer
-      - name: Extract version
+      # Extract version and commit SHA
+      - name: Extract version and commit SHA
+        uses: ./.github/actions/extract-version
+        id: version
+
+      # Set APP_VERSION env var for Inno Setup (uses GetEnv)
+      - name: Set APP_VERSION for Inno Setup
         shell: pwsh
         run: |
-          $pubspecContent = Get-Content -Path pubspec.yaml -Raw
-          if ($pubspecContent -match "version:\s*([\d\.]+)(\+\d+)?") {
-            $version = $Matches[1]
-            echo "APP_VERSION=$version" | Out-File -FilePath $Env:GITHUB_ENV -Append
-          } else {
-            Write-Error "Version field not found in pubspec.yaml. Please ensure the version is correctly specified."
-            exit 1
-          }
+          echo "APP_VERSION=${{ steps.version.outputs.version }}" | Out-File -FilePath $Env:GITHUB_ENV -Append
 
       # Enable Windows platform
       - name: Enable Windows platform support
