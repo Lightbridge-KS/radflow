@@ -1,0 +1,59 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug (with version)",
+      "request": "launch",
+      "type": "dart",
+      "args": [
+        "--dart-define=VERSION=0.x.y-dev",
+        "--dart-define=SHA_HASH=abcdef1",
+        "--dart-define=DEBUG_MODE=true"
+      ]
+    },
+    {
+      "name": "Debug Chrome (with version)",
+      "request": "launch",
+      "type": "dart",
+      "deviceId": "chrome",
+      "args": [
+        "--dart-define=VERSION=0.x.y-dev",
+        "--dart-define=SHA_HASH=abcdef1",
+        "--dart-define=DEBUG_MODE=true"
+      ]
+    },
+    {
+      "name": "Debug macOS (with version)",
+      "request": "launch",
+      "type": "dart",
+      "deviceId": "macos",
+      "args": [
+        "--dart-define=VERSION=0.x.y-dev",
+        "--dart-define=SHA_HASH=abcdef1",
+        "--dart-define=DEBUG_MODE=true"
+      ]
+    },
+    {
+      "name": "Profile (with version)",
+      "request": "launch",
+      "type": "dart",
+      "flutterMode": "profile",
+      "args": [
+        "--dart-define=VERSION=0.x.y-profile",
+        "--dart-define=SHA_HASH=abcdef1",
+        "--dart-define=DEBUG_MODE=false"
+      ]
+    },
+    {
+      "name": "Release (with version)",
+      "request": "launch",
+      "type": "dart",
+      "flutterMode": "release",
+      "args": [
+        "--dart-define=VERSION=0.x.y-release",
+        "--dart-define=SHA_HASH=abcdef1",
+        "--dart-define=DEBUG_MODE=false"
+      ]
+    }
+  ]
+}

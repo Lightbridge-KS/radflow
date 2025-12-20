@@ -15,7 +15,7 @@ A cross-platform (web and desktop) Flutter app to streamline radiology workflow 
 - Fonts: Local Roboto fonts (fonts/Roboto/) for offline deployment
 
 **Implemented:**
-- Navigation structure with drawer and 4 routes (/, /design/er, /calc/general, /settings)
+- Navigation structure with drawer and routes (/, /design/er, /calc/abdomen, /calc/liver, /calc/tirads, /settings)
 - Dynamic AppBar with persistent shell layout
   - Blended gradient AppBar on HomeScreen, inversePrimary on other screens
 - Theme switcher (System/Light/Dark) with SharedPreferencesAsync persistence
@@ -29,8 +29,8 @@ A cross-platform (web and desktop) Flutter app to streamline radiology workflow 
   - Mustache-based template generation (lib/services/design/designer/)
   - Responsive layout with input form and output display
   - Shared UI components (ThreeLevelDropdowns, GenerateButton, CopyButton)
-- Calculators: Prostate Volume, Spine Height Loss, Adrenal CT Washout, Liver Iron Concentration (LIC)
-  - Business logic returns data Maps for template rendering
+- Calculators: Prostate Volume, Spine Height Loss, Adrenal CT Washout, LIC, TI-RADS
+  - Business logic returns data Maps/Records for template rendering
   - Customizable Mustache templates (default + user override)
   - Settings → Calculator Templates editor with live preview
   - SharedPreferencesAsync persistence for custom templates
@@ -38,6 +38,7 @@ A cross-platform (web and desktop) Flutter app to streamline radiology workflow 
   - Type-safe error handling with Result<T, E> pattern (sealed classes)
   - Specific validation errors displayed via SnackBar (ParseError, ValidationError, CalculationError)
   - LaTeX formula rendering with clickable citation links (LIC calculator)
+  - TI-RADS: Multi-nodule assessment with real-time TR level preview, size-based FNA recommendations
 - App icons configured via flutter_launcher_icons (web, Windows, macOS)
 - CI/CD: GitHub Actions workflows for web (no CDN), Windows, and macOS builds
 
@@ -49,6 +50,7 @@ lib/
 │   ├── pages/
 │   │   ├── designer/         # DesignER screen
 │   │   ├── calculators/      # Calculator UI components + error handler
+│   │   │   └── tirads/       # TI-RADS calculator (multi-nodule input cards)
 │   │   └── settings/         # Calculator template editor
 │   ├── widgets/              # Reusable UI components (buttons, citation_url_launcher)
 │   ├── providers/            # theme_provider, snippet_templates_provider
@@ -57,7 +59,8 @@ lib/
 ├── services/
 │   ├── calculator/           # Calculator business logic + calculator_error.dart
 │   │   ├── shared/           # template_renderer, parser, statistics
-│   │   └── templates/        # Default Mustache templates
+│   │   ├── templates/        # Default Mustache templates
+│   │   └── tirads_calculator/ # TI-RADS business logic (models, validation, data)
 │   ├── design/designer/      # Protocol generation business logic
 │   └── preferences/          # snippet_templates_service
 └── fonts/Roboto/             # Local Roboto font files (offline)

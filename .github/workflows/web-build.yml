@@ -4,7 +4,7 @@ name: Web Build
 
 on:
   push:
-    branches: [ "main", "dev" ]
+    branches: [ "main", "dev", "feat" ]
     tags:
       - 'v*'
     # Only run when these paths change
@@ -16,7 +16,7 @@ on:
       - 'analysis_options.yaml'  # Dart analysis config
       - '.github/workflows/web-build.yml'
   pull_request:
-    branches: [ "main", "dev" ]
+    branches: [ "main", "dev", "feat" ]
     # Only run when these paths change
     paths:
       - 'lib/**'          # Dart source code
@@ -53,19 +53,27 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
+      # Extract version and commit SHA
+      - name: Extract version and commit SHA
+        uses: ./.github/actions/extract-version
+        id: version
+
       # Enable web platform
       - name: Enable web platform support
         run: flutter config --enable-web
 
       # Build web application
       - name: Build web application
-        run: flutter build web --no-web-resources-cdn --release
+        run: |
+          flutter build web --no-web-resources-cdn --release \
+            --dart-define=VERSION=${{ steps.version.outputs.version }} \
+            --dart-define=SHA_HASH=${{ steps.version.outputs.sha-hash }}
 
       # Package web app
       - name: Package web app
         run: |
           cd build/web
-          zip -r RadFlow-web.zip .
+          zip -r RadFlow-web-v${{ steps.version.outputs.version }}.zip .
 
       # Archive the built application
       - name: Archive web build
