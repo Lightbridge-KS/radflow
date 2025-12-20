@@ -21,5 +21,10 @@ build-web-local-wasm:
 
 serve-web-local:
 	cd build/web && python -m http.server 9000
+
+build-web-macos:
+	flutter build macos --release \
+	--dart-define=VERSION=0.x.y \
+	--dart-define=SHA_HASH=abcdef
 # Default target (runs when you just type 'make')
 .DEFAULT_GOAL := help
