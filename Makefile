@@ -6,6 +6,10 @@ help:
 # Generate app launcher icons
 icons:
 	dart run flutter_launcher_icons
+run-web-local:
+	flutter run -d chrome \
+	--dart-define=VERSION=0.x.x
+
 
 build-web-local:
 	flutter build web --no-web-resources-cdn --release

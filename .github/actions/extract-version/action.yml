@@ -1,0 +1,32 @@
+name: Extract Version and SHA
+description: Extract version from git tag and commit SHA for Flutter builds
+outputs:
+  version:
+    description: Semantic version (e.g., "1.2.0" or "1.0.0-dev")
+    value: ${{ steps.extract.outputs.version }}
+  sha-hash:
+    description: Short commit hash (7 chars)
+    value: ${{ steps.extract.outputs.sha-hash }}
+runs:
+  using: composite
+  steps:
+    - id: extract
+      shell: bash
+      run: |
+        # Extract short SHA (first 7 chars)
+        SHA_HASH="${{ github.sha }}"
+        SHA_HASH="${SHA_HASH:0:7}"
+
+        # Extract version from tag or use fallback
+        if [[ "${{ github.ref }}" == refs/tags/* ]]; then
+          # Strip 'v' prefix from tag (e.g., "v1.2.0" → "1.2.0")
+          VERSION="${{ github.ref_name }}"
+          VERSION="${VERSION#v}"
+        else
+          # Fallback for branch builds
+          VERSION="1.0.0-dev"
+        fi
+
+        echo "version=$VERSION" >> $GITHUB_OUTPUT
+        echo "sha-hash=$SHA_HASH" >> $GITHUB_OUTPUT
+        echo "Building with VERSION=$VERSION and SHA_HASH=$SHA_HASH"

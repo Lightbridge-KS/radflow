@@ -4,7 +4,7 @@ name: macOS Build
 
 on:
   push:
-    branches: [ "main", "dev" ]
+    branches: [ "main", "dev", "feat" ]
     tags:
       - 'v*'
     # Only run when these paths change
@@ -16,7 +16,7 @@ on:
       - 'analysis_options.yaml'  # Dart analysis config
       - '.github/workflows/macos-build.yml'
   pull_request:
-    branches: [ "main", "dev" ]
+    branches: [ "main", "dev", "feat" ]
     # Only run when these paths change
     paths:
       - 'lib/**'          # Dart source code
@@ -59,13 +59,15 @@ jobs:
 
       # Build macOS application
       - name: Build macOS application
-        run: flutter build macos --release
+        run: flutter build macos --release \
+          --dart-define=VERSION=${{ steps.version.outputs.version }} \
+          --dart-define=SHA_HASH=${{ steps.version.outputs.sha-hash }}
 
       # Package macOS app
       - name: Package macOS app
         run: |
           cd build/macos/Build/Products/Release
-          zip -r RadFlow-macos.zip *.app
+          zip -r RadFlow-macos-v${{ steps.version.outputs.version }}.zip *.app
 
       # Archive the built application
       - name: Archive macOS build

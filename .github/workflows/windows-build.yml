@@ -4,7 +4,7 @@ name: Windows Build
 
 on:
   push:
-    branches: [ "main", "dev" ]
+    branches: [ "main", "dev", "feat" ]
     tags:
       - 'v*'
     # Only run when these paths change
@@ -16,7 +16,7 @@ on:
       - 'analysis_options.yaml'  # Dart analysis config
       - '.github/workflows/windows-build.yml'
   pull_request:
-    branches: [ "main", "dev" ]
+    branches: [ "main", "dev", "feat" ]
     # Only run when these paths change
     paths:
       - 'lib/**'          # Dart source code
@@ -74,7 +74,9 @@ jobs:
 
       # Build Windows application
       - name: Build Windows application
-        run: flutter build windows --release
+        run: flutter build windows --release `
+          --dart-define=VERSION=${{ steps.version.outputs.version }} `
+          --dart-define=SHA_HASH=${{ steps.version.outputs.sha-hash }}
 
       # Debug: List all files in the Release directory
       - name: List build contents
@@ -90,7 +92,13 @@ jobs:
         
       - name: Compile Installer
         run: |
-          & "C:\Program Files (x86)\Inno Setup 6\iscc.exe" /O"build\windows\installer" /DAppVersion=$env:APP_VERSION "windows\installer\inno_setup.iss"
+          & "C:\Program Files (x86)\Inno Setup 6\iscc.exe" /O"build\windows\installer" /DAppVersion=${{ steps.version.outputs.version }} "windows\installer\inno_setup.iss"
+          Get-ChildItem -Path "build\windows\installer"
+
+      # Rename installer to include version
+      - name: Rename installer with version
+        run: |
+          Move-Item -Path "build\windows\installer\RadFlow-Setup.exe" -Destination "build\windows\installer\RadFlow-Setup-v${{ steps.version.outputs.version }}.exe"
           Get-ChildItem -Path "build\windows\installer"
 
       # Archive the built installer
