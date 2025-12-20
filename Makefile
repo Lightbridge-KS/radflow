@@ -8,12 +8,14 @@ icons:
 	dart run flutter_launcher_icons
 run-web-local:
 	flutter run -d chrome \
-	--dart-define=VERSION=0.x.x
+	--dart-define=VERSION=0.x.y \
+	--dart-define=SHA_HASH=abcdef
 
 
 build-web-local:
-	flutter build web --no-web-resources-cdn --release
-
+	flutter build web --no-web-resources-cdn --release \
+	--dart-define=VERSION=0.x.y \
+	--dart-define=SHA_HASH=abcdef
 build-web-local-wasm:
 	flutter build web --wasm --no-web-resources-cdn --release 
 
