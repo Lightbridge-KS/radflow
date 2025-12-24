@@ -221,7 +221,7 @@ class _FeatureCardsGrid extends StatelessWidget {
         title: 'Calculators',
         subtitle: 'Medical calculators and clinical scoring systems',
         icon: Icons.calculate_outlined,
-        route: Routes.calculatorAbdomen,
+        route: Routes.calculatorGallery,
       ),
       _FeatureCardData(
         title: 'Protocols',
