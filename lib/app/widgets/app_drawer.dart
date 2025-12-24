@@ -53,6 +53,16 @@ class AppDrawer extends StatelessWidget {
             initiallyExpanded: true,
             children: [
               ListTile(
+                leading: Icon(Icons.grid_view, size: 16),
+                title: Text(ScreenInfo.calcGallery.title),
+                selected: currentLocation == Routes.calculatorGallery,
+                contentPadding: EdgeInsets.only(left: 72),
+                onTap: () {
+                  context.go(Routes.calculatorGallery);
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
                 leading: Icon(Icons.circle, size: 12),
                 title: Text(ScreenInfo.calcAbdo.title),
                 selected: currentLocation == Routes.calculatorAbdomen,

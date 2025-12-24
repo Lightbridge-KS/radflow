@@ -15,7 +15,7 @@ A cross-platform (web and desktop) Flutter app to streamline radiology workflow 
 - Fonts: Local Roboto fonts (fonts/Roboto/) for offline deployment
 
 **Implemented:**
-- Navigation structure with drawer and routes (/, /design/er, /calc/abdomen, /calc/liver, /calc/tirads, /settings)
+- Navigation structure with drawer and routes (/, /design/er, /calc, /calc/abdomen, /calc/liver, /calc/tirads, /settings)
 - Dynamic AppBar with persistent shell layout
   - Blended gradient AppBar on HomeScreen, inversePrimary on other screens
 - Theme switcher (System/Light/Dark) with SharedPreferencesAsync persistence
@@ -29,6 +29,7 @@ A cross-platform (web and desktop) Flutter app to streamline radiology workflow 
   - Mustache-based template generation (lib/services/design/designer/)
   - Responsive layout with input form and output display
   - Shared UI components (ThreeLevelDropdowns, GenerateButton, CopyButton)
+- Calculators Gallery (/calc): Feature cards grid showcasing calculator screens
 - Calculators: Prostate Volume, Spine Height Loss, Adrenal CT Washout, LIC, TI-RADS
   - Business logic returns data Maps/Records for template rendering
   - Customizable Mustache templates (default + user override)
