@@ -49,6 +49,7 @@ class VersionWidget extends ConsumerWidget {
   void _showVersionDialog(BuildContext context, WidgetRef ref) {
     final String version = AppConfig.appVersion;
     final String shaHash = AppConfig.shaHash;
+    final colorScheme = Theme.of(context).colorScheme;
 
     showDialog(
       context: context,
@@ -62,6 +63,11 @@ class VersionWidget extends ConsumerWidget {
               'Version: $version ($shaHash)',
               style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
             ),
+            SizedBox(height: 16),
+            Text(
+              'Radiology AI Unit © ${DateTime.now().year}',
+              style: TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: colorScheme.primary),
+            )
           ],
         ),
         actions: [
