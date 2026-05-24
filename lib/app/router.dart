@@ -3,6 +3,8 @@ import 'package:go_router/go_router.dart';
 import 'pages/home_screen.dart';
 import 'pages/settings_screen.dart';
 import 'pages/designer/designer_screen.dart';
+import 'pages/design_ward/design_ward_gallery_screen.dart';
+import 'pages/design_ward/design_cvs_screen.dart';
 import 'pages/calculators/calculator_abdomen_screen.dart';
 import 'pages/calculators/calculator_liver_screen.dart';
 import 'pages/calculators/calculators_gallery_screen.dart';
@@ -14,6 +16,8 @@ import 'widgets/shell_layout.dart';
 abstract class Routes {
   static const String home = '/';
   static const String designER = '/design/er';
+  static const String designWard = '/design/ward';
+  static const String designCvs = '/design/ward/cvs';
   static const String calculatorGallery = '/calc';
   static const String calculatorAbdomen = '/calc/abdomen';
   static const String calculatorLiver = '/calc/liver';
@@ -42,6 +46,20 @@ final class AppRouter {
             pageBuilder: (context, state) => NoTransitionPage(
               key: state.pageKey,
               child: const DesignERScreen(),
+            ),
+          ),
+          GoRoute(
+            path: Routes.designWard,
+            pageBuilder: (context, state) => NoTransitionPage(
+              key: state.pageKey,
+              child: const DesignWardGalleryScreen(),
+            ),
+          ),
+          GoRoute(
+            path: Routes.designCvs,
+            pageBuilder: (context, state) => NoTransitionPage(
+              key: state.pageKey,
+              child: const DesignCvsScreen(),
             ),
           ),
           GoRoute(

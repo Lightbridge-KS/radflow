@@ -38,10 +38,30 @@ class AppDrawer extends StatelessWidget {
               ListTile(
                 leading: Icon(Icons.circle, size: 12),
                 title: Text(ScreenInfo.designER.title),
-                selected: currentLocation == '/design/er',
+                selected: currentLocation == Routes.designER,
                 contentPadding: EdgeInsets.only(left: 72),
                 onTap: () {
-                  context.go('/design/er');
+                  context.go(Routes.designER);
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.grid_view, size: 16),
+                title: Text(ScreenInfo.designWard.title),
+                selected: currentLocation == Routes.designWard,
+                contentPadding: EdgeInsets.only(left: 72),
+                onTap: () {
+                  context.go(Routes.designWard);
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.circle, size: 12),
+                title: Text(ScreenInfo.designCvs.title),
+                selected: currentLocation == Routes.designCvs,
+                contentPadding: EdgeInsets.only(left: 72),
+                onTap: () {
+                  context.go(Routes.designCvs);
                   Navigator.pop(context);
                 },
               ),
