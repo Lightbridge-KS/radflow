@@ -1,6 +1,8 @@
 /// Screen Information
 enum ScreenInfo {
   designER("Protocol ER"),
+  designWard("Protocol Ward"),
+  designCvs("Protocol CVS"),
   calcGallery("Calculators"),
   calcAbdo("Abdomen Calculator"),
   calcLiver("Liver Calculator"),

@@ -30,6 +30,8 @@ class ShellLayout extends StatelessWidget {
 
     final titleMap = {
       Routes.designER: ScreenInfo.designER.title,
+      Routes.designWard: ScreenInfo.designWard.title,
+      Routes.designCvs: ScreenInfo.designCvs.title,
       Routes.calculatorGallery: 'Calculators',
       Routes.calculatorAbdomen: 'Abdomen Calculator',
       Routes.calculatorLiver: 'Liver Calculator',

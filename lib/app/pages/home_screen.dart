@@ -218,16 +218,16 @@ class _FeatureCardsGrid extends StatelessWidget {
         route: Routes.designER,
       ),
       _FeatureCardData(
+        title: ScreenInfo.designWard.title,
+        subtitle: 'Generate CT/MRI protocols for Ward studies (CVS, Chest, Abdo, MSK, Neuro)',
+        icon: Icons.local_hospital_outlined,
+        route: Routes.designWard,
+      ),
+      _FeatureCardData(
         title: 'Calculators',
         subtitle: 'Medical calculators and clinical scoring systems',
         icon: Icons.calculate_outlined,
         route: Routes.calculatorGallery,
-      ),
-      _FeatureCardData(
-        title: 'Protocols',
-        subtitle: 'Imaging protocols and departmental guidelines',
-        icon: Icons.description_outlined,
-        route: null, // Stub - not implemented yet
       ),
       // _FeatureCardData(
       //   title: 'Reports',
