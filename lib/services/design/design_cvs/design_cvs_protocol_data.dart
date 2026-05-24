@@ -50,9 +50,7 @@ class DesignCvsProtocolData {
     // CTA Coronary (CAD)
     "cta_coro": {
       'protocolName': idDispMap['cta_coro']!,
-      'contrastText': '''
-- IV contrast 50-100 ml at right antecubital fossa, flow rate 5 ml/sec
-''',
+      'contrastText': 'IV contrast 50-100 ml at right antecubital fossa, flow rate 5 ml/sec',
       'phaseDesignText': '''
 - Coronary artery calcium scoring
 - ECG-gated CTA covers the heart
@@ -65,9 +63,7 @@ Patient with CABG -> scan cover from the **thoracic inlet to the base of heart**
     // CTA Cardiac Mass
     "cta_cardiac_mass": {
       'protocolName': idDispMap['cta_cardiac_mass']!,
-      'contrastText': '''
-- IV contrast 60-100 ml at right antecubital fossa, flow rate 5 ml/sec
-''',
+      'contrastText': 'IV contrast 60-100 ml at right antecubital fossa, flow rate 5 ml/sec',
       'phaseDesignText': '''
 - Pre-contrast: prospective ECG-gated CT covers the heart
 - ECG-gated CTA covers the heart
@@ -78,9 +74,7 @@ Patient with CABG -> scan cover from the **thoracic inlet to the base of heart**
     // CTA Aortic Dissection
     "cta_aortic_dissect": {
       'protocolName': idDispMap['cta_aortic_dissect']!,
-      'contrastText': '''
-- IV contrast 70-100 ml at right antecubital fossa, flow rate 5 ml/sec
-''',
+      'contrastText': 'IV contrast 70-100 ml at right antecubital fossa, flow rate 5 ml/sec',
       'phaseDesignText': '''
 - Pre-contrast (whole aorta)
 - CTA (whole aorta)
@@ -93,9 +87,7 @@ In a patient with suspected Stanford type A aortic dissection, ECG-gated CTA of 
     // CTA Rupture Aortic Aneurysm
     "cta_ruptured_aortic_aneu": {
       'protocolName': idDispMap['cta_ruptured_aortic_aneu']!,
-      'contrastText': '''
-- IV contrast 70-100 ml at right antecubital fossa, flow rate 5 ml/sec
-''',
+      'contrastText': 'IV contrast 70-100 ml at right antecubital fossa, flow rate 5 ml/sec',
       'phaseDesignText': '''
 - Pre-contrast (whole aorta)
 - CTA (whole aorta)
@@ -106,9 +98,7 @@ In a patient with suspected Stanford type A aortic dissection, ECG-gated CTA of 
     // CTA for PE
     "cta_pe": {
       'protocolName': idDispMap['cta_pe']!,
-      'contrastText': '''
-- IV contrast 60-100 ml at right antecubital fossa, flow rate 5 ml/sec
-''',
+      'contrastText': 'IV contrast 60-100 ml at right antecubital fossa, flow rate 5 ml/sec',
       'phaseDesignText': '''
 - Pre-contrast (chest)
 - CTPA (pulmonary artery)
@@ -119,9 +109,7 @@ In a patient with suspected Stanford type A aortic dissection, ECG-gated CTA of 
     // CTA Whole Aorta (pre-op TAVR)
     "cta_tavr_preop": {
       'protocolName': idDispMap['cta_tavr_preop']!,
-      'contrastText': '''
-- IV contrast 70-100 ml at right antecubital fossa, flow rate 5 ml/sec
-''',
+      'contrastText': 'IV contrast 70-100 ml at right antecubital fossa, flow rate 5 ml/sec',
       'phaseDesignText': '''
 - Pre-contrast: prospective ECG-gated CT covers the heart to evaluate aortic valve calcium scoring
 - ECG-gated CTA covers the ascending aorta to the base of the heart
@@ -132,9 +120,7 @@ In a patient with suspected Stanford type A aortic dissection, ECG-gated CTA of 
     // CTA Whole Aorta (TEVAR/EVAR)
     "cta_tevar_evar_follow": {
       'protocolName': idDispMap['cta_tevar_evar_follow']!,
-      'contrastText': '''
-- IV contrast 70-100 ml at right antecubital fossa, flow rate 5 ml/sec
-''',
+      'contrastText': 'IV contrast 70-100 ml at right antecubital fossa, flow rate 5 ml/sec',
       'phaseDesignText': '''
 - Pre-contrast (whole aorta)
 - CTA (whole aorta)
@@ -146,9 +132,7 @@ In a patient with suspected Stanford type A aortic dissection, ECG-gated CTA of 
     // MRA for TRA Stenosis / TRV Thrombosis
     "mra_tra_ste_trv_thrombo": {
       'protocolName': idDispMap['mra_tra_ste_trv_thrombo']!,
-      'contrastText': '''
-- IV Gd-based contrast, dose 0.1-0.2 mmol/kg, flow rate 1.5-2.5 ml/sec
-''',
+      'contrastText': 'IV Gd-based contrast, dose 0.1-0.2 mmol/kg, flow rate 1.5-2.5 ml/sec',
       'phaseDesignText': '''
 - Ax T1W DIXON (In-phase, oppose phase, fat only, water only)
 - Ax T2W Fast Spin Echo Fat Saturated
