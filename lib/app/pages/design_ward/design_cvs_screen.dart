@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../services/design/design_cvs/design_cvs.dart';
+import '../../../services/design/design_ward_common/ward_common.dart';
 import '../../widgets/buttons.dart';
 import '_design_cvs_input.dart';
 
@@ -20,6 +21,7 @@ class _DesignCvsScreenState extends State<DesignCvsScreen> {
   final TextEditingController _outputController = TextEditingController();
 
   String? _protocolId;
+  WardCommonValues _wardCommon = const WardCommonValues.empty();
 
   bool get _isSelectionComplete => _protocolId != null;
 
@@ -36,10 +38,11 @@ class _DesignCvsScreenState extends State<DesignCvsScreen> {
     }
 
     try {
-      final cvs = DesignCvs(protocolId: _protocolId!);
-      final template = await cvs.generate();
+      final body = await DesignCvs(protocolId: _protocolId!).generate();
+      final trailer = const WardCommon().append(_wardCommon);
+      final output = trailer.isEmpty ? body : '$body\n$trailer';
       setState(() {
-        _outputController.text = template;
+        _outputController.text = output;
       });
     } catch (e) {
       _showSnackBar('Error generating protocol: $e');
@@ -51,6 +54,7 @@ class _DesignCvsScreenState extends State<DesignCvsScreen> {
     setState(() {
       _outputController.clear();
       _protocolId = null;
+      _wardCommon = const WardCommonValues.empty();
     });
   }
 
@@ -106,10 +110,14 @@ class _DesignCvsScreenState extends State<DesignCvsScreen> {
         padding: const EdgeInsets.all(16.0),
         child: DesignCvsInput(
           key: _inputKey,
-          onSelectionChanged: (protocolId) {
+          onSelectionChanged: (values) {
             setState(() {
-              _protocolId = protocolId;
+              _protocolId = values.protocolId;
+              _wardCommon = values.wardCommon;
             });
+          },
+          onSubmit: () {
+            if (_isSelectionComplete) _generateProtocol();
           },
         ),
       ),

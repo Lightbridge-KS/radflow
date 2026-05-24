@@ -1,20 +1,25 @@
 import 'package:flutter/material.dart';
 import '../../../services/design/design_cvs/design_cvs_protocol_data.dart';
+import '../../../services/design/design_ward_common/ward_common.dart';
 import '../../widgets/dropdowns_two.dart';
+import '_ward_common_input.dart';
 
-/// Input form for the Protocol CVS screen.
+/// Aggregate input form for the Protocol CVS screen.
 ///
-/// Currently only hosts the cascading Exam → Protocol dropdowns. Kept as a
-/// separate widget (mirroring `DesignERInput`) so additional fields can be
-/// dropped in later without restructuring the screen.
+/// Composes the protocol selector (cascading Exam → Protocol dropdowns)
+/// with the ward-common block (Check ภาพ + Resident). The screen receives
+/// a single combined snapshot via [onSelectionChanged].
 class DesignCvsInput extends StatefulWidget {
-  /// Emits the selected `protocolId` (or `null` when the protocol level is
-  /// not yet chosen).
-  final void Function(String? protocolId) onSelectionChanged;
+  final void Function(DesignCvsInputValues values) onSelectionChanged;
+
+  /// Fires when the user submits a text field via Enter. The screen wires
+  /// this to its Generate action.
+  final VoidCallback? onSubmit;
 
   const DesignCvsInput({
     super.key,
     required this.onSelectionChanged,
+    this.onSubmit,
   });
 
   @override
@@ -24,21 +29,60 @@ class DesignCvsInput extends StatefulWidget {
 class DesignCvsInputState extends State<DesignCvsInput> {
   final GlobalKey<TwoLevelDropdownsState> _dropdownsKey =
       GlobalKey<TwoLevelDropdownsState>();
+  final GlobalKey<WardCommonInputState> _wardCommonKey =
+      GlobalKey<WardCommonInputState>();
 
-  /// Resets both dropdowns and re-emits `null` to the parent.
+  String? _protocolId;
+  WardCommonValues _wardCommon = const WardCommonValues.empty();
+
+  /// Resets both child widgets back to their initial state.
   void reset() {
     _dropdownsKey.currentState?.reset();
+    _wardCommonKey.currentState?.reset();
+  }
+
+  void _emit() {
+    widget.onSelectionChanged(DesignCvsInputValues(
+      protocolId: _protocolId,
+      wardCommon: _wardCommon,
+    ));
   }
 
   @override
   Widget build(BuildContext context) {
-    return TwoLevelDropdowns(
-      key: _dropdownsKey,
-      choiceIdMap: DesignCvsProtocolData.choiceIdMap,
-      idDispMap: DesignCvsProtocolData.idDispMap,
-      onSelectionChanged: (selectionMap) {
-        widget.onSelectionChanged(selectionMap['level2']);
-      },
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        TwoLevelDropdowns(
+          key: _dropdownsKey,
+          choiceIdMap: DesignCvsProtocolData.choiceIdMap,
+          idDispMap: DesignCvsProtocolData.idDispMap,
+          onSelectionChanged: (selectionMap) {
+            _protocolId = selectionMap['level2'];
+            _emit();
+          },
+        ),
+        const SizedBox(height: 16),
+        WardCommonInput(
+          key: _wardCommonKey,
+          onChanged: (values) {
+            _wardCommon = values;
+            _emit();
+          },
+          onSubmit: widget.onSubmit,
+        ),
+      ],
     );
   }
+}
+
+/// Combined snapshot emitted to the parent screen.
+class DesignCvsInputValues {
+  final String? protocolId;
+  final WardCommonValues wardCommon;
+
+  const DesignCvsInputValues({
+    required this.protocolId,
+    required this.wardCommon,
+  });
 }
