@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../widgets/control_semantics.dart';
 import '../../../../services/calculator/tirads_calculator/tirads_calculator.dart';
 import '../../../../services/calculator/tirads_calculator/tirads_calculator_data.dart';
 import '../../../../services/calculator/tirads_calculator/models/tirads_models.dart';
@@ -131,7 +132,9 @@ class _TiradsNoduleInputCardState extends State<TiradsNoduleInputCard> {
       final sizeInCm = double.tryParse(newState.sizeText);
       final result = TiradsCalculator.getTiradsNoduleAssessment(
         id: newState.id,
-        location: newState.location.isEmpty ? 'Nodule ${newState.id}' : newState.location,
+        location: newState.location.isEmpty
+            ? 'Nodule ${newState.id}'
+            : newState.location,
         composition: newState.composition!,
         echogenicity: newState.echogenicity!,
         shape: newState.shape!,
@@ -209,35 +212,43 @@ class _TiradsNoduleInputCardState extends State<TiradsNoduleInputCard> {
                 // Location TextField
                 Expanded(
                   flex: 2,
-                  child: TextField(
-                    controller: _locationController,
-                    decoration: const InputDecoration(
-                      labelText: 'Location',
-                      hintText: 'e.g., Right lobe, mid',
-                      border: OutlineInputBorder(),
-                      isDense: true,
+                  child: ControlSemantics(
+                    label: 'Nodule ${widget.state.id} location',
+                    child: TextField(
+                      controller: _locationController,
+                      decoration: const InputDecoration(
+                        labelText: 'Location',
+                        hintText: 'e.g., Right lobe, mid',
+                        border: OutlineInputBorder(),
+                        isDense: true,
+                      ),
+                      onChanged: (value) {
+                        _updateState(state.copyWith(location: value));
+                      },
                     ),
-                    onChanged: (value) {
-                      _updateState(state.copyWith(location: value));
-                    },
                   ),
                 ),
                 const SizedBox(width: 12),
                 // Size TextField (optional)
                 Expanded(
                   flex: 1,
-                  child: TextField(
-                    controller: _sizeController,
-                    decoration: const InputDecoration(
-                      labelText: 'Size (cm)',
-                      hintText: 'Optional',
-                      border: OutlineInputBorder(),
-                      isDense: true,
+                  child: ControlSemantics(
+                    label: 'Nodule ${widget.state.id} size (cm)',
+                    child: TextField(
+                      controller: _sizeController,
+                      decoration: const InputDecoration(
+                        labelText: 'Size (cm)',
+                        hintText: 'Optional',
+                        border: OutlineInputBorder(),
+                        isDense: true,
+                      ),
+                      keyboardType: const TextInputType.numberWithOptions(
+                        decimal: true,
+                      ),
+                      onChanged: (value) {
+                        _updateState(state.copyWith(sizeText: value));
+                      },
                     ),
-                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                    onChanged: (value) {
-                      _updateState(state.copyWith(sizeText: value));
-                    },
                   ),
                 ),
               ],
@@ -247,7 +258,11 @@ class _TiradsNoduleInputCardState extends State<TiradsNoduleInputCard> {
             // Dropdown Menus
             _buildDropdownRow('Composition', 'composition', state.composition),
             const SizedBox(height: 8),
-            _buildDropdownRow('Echogenicity', 'echogenicity', state.echogenicity),
+            _buildDropdownRow(
+              'Echogenicity',
+              'echogenicity',
+              state.echogenicity,
+            ),
             const SizedBox(height: 8),
             _buildDropdownRow('Shape', 'shape', state.shape),
             const SizedBox(height: 8),
@@ -287,14 +302,22 @@ class _TiradsNoduleInputCardState extends State<TiradsNoduleInputCard> {
         ),
         const Spacer(),
         IconButton(
-          icon: const Icon(Icons.refresh, size: 20),
+          icon: Icon(
+            Icons.refresh,
+            size: 20,
+            semanticLabel: 'Reset nodule ${state.id}',
+          ),
           tooltip: 'Reset',
           onPressed: _onReset,
           visualDensity: VisualDensity.compact,
         ),
         if (widget.deletable)
           IconButton(
-            icon: const Icon(Icons.close, size: 20),
+            icon: Icon(
+              Icons.close,
+              size: 20,
+              semanticLabel: 'Delete nodule ${state.id}',
+            ),
             tooltip: 'Delete',
             onPressed: widget.onDelete,
             visualDensity: VisualDensity.compact,
@@ -310,33 +333,34 @@ class _TiradsNoduleInputCardState extends State<TiradsNoduleInputCard> {
       children: [
         SizedBox(
           width: 100,
-          child: Text(
-            label,
-            style: Theme.of(context).textTheme.bodyMedium,
-          ),
+          child: Text(label, style: Theme.of(context).textTheme.bodyMedium),
         ),
         Expanded(
-          child: DropdownMenu<String>(
-            initialSelection: value,
-            expandedInsets: EdgeInsets.zero,
-            onSelected: (selected) {
-              if (selected != null) {
-                final newState = switch (category) {
-                  'composition' => widget.state.copyWith(composition: selected),
-                  'echogenicity' => widget.state.copyWith(echogenicity: selected),
-                  'shape' => widget.state.copyWith(shape: selected),
-                  'margin' => widget.state.copyWith(margin: selected),
-                  _ => widget.state,
-                };
-                _updateState(newState);
-              }
-            },
-            dropdownMenuEntries: choices.entries.map((e) {
-              return DropdownMenuEntry<String>(
-                value: e.key,
-                label: e.value,
-              );
-            }).toList(),
+          child: ControlSemantics(
+            label: 'Nodule ${widget.state.id} $label',
+            child: DropdownMenu<String>(
+              initialSelection: value,
+              expandedInsets: EdgeInsets.zero,
+              onSelected: (selected) {
+                if (selected != null) {
+                  final newState = switch (category) {
+                    'composition' => widget.state.copyWith(
+                      composition: selected,
+                    ),
+                    'echogenicity' => widget.state.copyWith(
+                      echogenicity: selected,
+                    ),
+                    'shape' => widget.state.copyWith(shape: selected),
+                    'margin' => widget.state.copyWith(margin: selected),
+                    _ => widget.state,
+                  };
+                  _updateState(newState);
+                }
+              },
+              dropdownMenuEntries: choices.entries.map((e) {
+                return DropdownMenuEntry<String>(value: e.key, label: e.value);
+              }).toList(),
+            ),
           ),
         ),
       ],
@@ -352,18 +376,16 @@ class _TiradsNoduleInputCardState extends State<TiradsNoduleInputCard> {
         final hasOtherFoci = state.echogenicFoci.any((f) => f != 'none-comet');
 
         return CheckboxListTile(
-          title: Text(
-            e.value,
-            style: Theme.of(context).textTheme.bodyMedium,
-          ),
+          title: Text(e.value, style: Theme.of(context).textTheme.bodyMedium),
           value: state.echogenicFoci.contains(e.key),
           dense: true,
           visualDensity: VisualDensity.compact,
           contentPadding: EdgeInsets.zero,
           // Disable other options if none-comet is selected
           // Disable none-comet if other foci are selected
-          onChanged: (isNoneComet && hasOtherFoci) ||
-                     (!isNoneComet && state.echogenicFoci.contains('none-comet'))
+          onChanged:
+              (isNoneComet && hasOtherFoci) ||
+                  (!isNoneComet && state.echogenicFoci.contains('none-comet'))
               ? null
               : (_) => _toggleEchogenicFoci(e.key),
         );
@@ -371,7 +393,10 @@ class _TiradsNoduleInputCardState extends State<TiradsNoduleInputCard> {
     );
   }
 
-  Widget _buildAssessmentPreview(BuildContext context, TiradsNoduleCardState state) {
+  Widget _buildAssessmentPreview(
+    BuildContext context,
+    TiradsNoduleCardState state,
+  ) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 

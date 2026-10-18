@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../widgets/control_semantics.dart';
 import '../../../core/result.dart';
 import '../../../services/calculator/adrenal_washout_calculator.dart';
 import '../../../services/calculator/shared/template_renderer.dart';
@@ -12,10 +13,12 @@ class AppAdrenalWashoutCalculator extends ConsumerStatefulWidget {
   const AppAdrenalWashoutCalculator({super.key});
 
   @override
-  ConsumerState<AppAdrenalWashoutCalculator> createState() => _AppAdrenalWashoutCalculatorState();
+  ConsumerState<AppAdrenalWashoutCalculator> createState() =>
+      _AppAdrenalWashoutCalculatorState();
 }
 
-class _AppAdrenalWashoutCalculatorState extends ConsumerState<AppAdrenalWashoutCalculator> {
+class _AppAdrenalWashoutCalculatorState
+    extends ConsumerState<AppAdrenalWashoutCalculator> {
   final TextEditingController _preContrastController = TextEditingController();
   final TextEditingController _enhancedController = TextEditingController();
   final TextEditingController _delayedController = TextEditingController();
@@ -32,7 +35,9 @@ class _AppAdrenalWashoutCalculatorState extends ConsumerState<AppAdrenalWashoutC
 
   Future<void> _calculate() async {
     final result = AdrenalWashoutCalculator.getAdrenalWashoutDataFromString(
-      nc: _preContrastController.text.trim().isEmpty ? null : _preContrastController.text,
+      nc: _preContrastController.text.trim().isEmpty
+          ? null
+          : _preContrastController.text,
       enh: _enhancedController.text,
       delayed: _delayedController.text,
     );
@@ -41,7 +46,9 @@ class _AppAdrenalWashoutCalculatorState extends ConsumerState<AppAdrenalWashoutC
       case Success(value: final data):
         // Get template and render
         final service = ref.read(snippetTemplatesServiceProvider);
-        final template = await service.getTemplate(SnippetTemplatesService.adrenalWashoutId);
+        final template = await service.getTemplate(
+          SnippetTemplatesService.adrenalWashoutId,
+        );
 
         if (!mounted) return;
 
@@ -79,9 +86,9 @@ class _AppAdrenalWashoutCalculatorState extends ConsumerState<AppAdrenalWashoutC
       children: [
         Text(
           'Adrenal CT Washout Calculator',
-          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
+          style: Theme.of(
+            context,
+          ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 16),
         Row(
@@ -91,51 +98,66 @@ class _AppAdrenalWashoutCalculatorState extends ConsumerState<AppAdrenalWashoutC
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  TextField(
-                    controller: _preContrastController,
-                    decoration: const InputDecoration(
-                      labelText: 'Pre-contrast (HU) (Optional)',
-                      hintText: 'e.g. 10',
-                      border: OutlineInputBorder(),
+                  ControlSemantics(
+                    label: 'Pre-contrast (HU) (Optional)',
+                    child: TextField(
+                      controller: _preContrastController,
+                      decoration: const InputDecoration(
+                        labelText: 'Pre-contrast (HU) (Optional)',
+                        hintText: 'e.g. 10',
+                        border: OutlineInputBorder(),
+                      ),
+                      keyboardType: const TextInputType.numberWithOptions(
+                        decimal: true,
+                      ),
+                      onSubmitted: (_) => _calculate(),
                     ),
-                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                    onSubmitted: (_) => _calculate(),
                   ),
                   const SizedBox(height: 12),
-                  TextField(
-                    controller: _enhancedController,
-                    decoration: const InputDecoration(
-                      labelText: 'Enhanced (HU)',
-                      hintText: 'e.g. 100',
-                      border: OutlineInputBorder(),
+                  ControlSemantics(
+                    label: 'Enhanced (HU)',
+                    child: TextField(
+                      controller: _enhancedController,
+                      decoration: const InputDecoration(
+                        labelText: 'Enhanced (HU)',
+                        hintText: 'e.g. 100',
+                        border: OutlineInputBorder(),
+                      ),
+                      keyboardType: const TextInputType.numberWithOptions(
+                        decimal: true,
+                      ),
+                      onSubmitted: (_) => _calculate(),
                     ),
-                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                    onSubmitted: (_) => _calculate(),
                   ),
                   const SizedBox(height: 12),
-                  TextField(
-                    controller: _delayedController,
-                    decoration: const InputDecoration(
-                      labelText: '15 Minute Delayed (HU)',
-                      hintText: 'e.g. 60',
-                      border: OutlineInputBorder(),
+                  ControlSemantics(
+                    label: '15 Minute Delayed (HU)',
+                    child: TextField(
+                      controller: _delayedController,
+                      decoration: const InputDecoration(
+                        labelText: '15 Minute Delayed (HU)',
+                        hintText: 'e.g. 60',
+                        border: OutlineInputBorder(),
+                      ),
+                      keyboardType: const TextInputType.numberWithOptions(
+                        decimal: true,
+                      ),
+                      onSubmitted: (_) => _calculate(),
                     ),
-                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                    onSubmitted: (_) => _calculate(),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     'Pre-contrast is optional. If provided, both APW and RPW will be calculated.',
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Colors.grey,
-                    ),
+                    style: Theme.of(
+                      context,
+                    ).textTheme.bodySmall?.copyWith(color: Colors.grey),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     'APW >60% or RPW >40% suggests adenoma over malignancy',
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Colors.grey,
-                    ),
+                    style: Theme.of(
+                      context,
+                    ).textTheme.bodySmall?.copyWith(color: Colors.grey),
                   ),
                 ],
               ),
@@ -145,13 +167,16 @@ class _AppAdrenalWashoutCalculatorState extends ConsumerState<AppAdrenalWashoutC
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  TextField(
-                    controller: _outputController,
-                    decoration: const InputDecoration(
-                      labelText: 'Washout Result',
-                      border: OutlineInputBorder(),
+                  ControlSemantics(
+                    label: 'Washout Result',
+                    child: TextField(
+                      controller: _outputController,
+                      decoration: const InputDecoration(
+                        labelText: 'Washout Result',
+                        border: OutlineInputBorder(),
+                      ),
+                      readOnly: false,
                     ),
-                    readOnly: false,
                   ),
                   const SizedBox(height: 8),
                   Row(
@@ -159,15 +184,24 @@ class _AppAdrenalWashoutCalculatorState extends ConsumerState<AppAdrenalWashoutC
                     children: [
                       Row(
                         children: [
-                          GenerateButton(onPressed: _calculate),
+                          GenerateButton(
+                            semanticLabel: 'Generate adrenal washout',
+                            onPressed: _calculate,
+                          ),
                           const SizedBox(width: 8),
-                          CopyButton(controller: _outputController),
+                          CopyButton(
+                            semanticLabel: 'Copy adrenal washout',
+                            controller: _outputController,
+                          ),
                         ],
                       ),
                       ElevatedButton.icon(
                         onPressed: _resetInputs,
                         icon: const Icon(Icons.refresh),
-                        label: const Text('Reset'),
+                        label: const Text(
+                          'Reset',
+                          semanticsLabel: 'Reset adrenal washout',
+                        ),
                       ),
                     ],
                   ),

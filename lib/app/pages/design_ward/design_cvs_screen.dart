@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../widgets/control_semantics.dart';
 import '../../../services/design/design_cvs/design_cvs.dart';
 import '../../../services/design/design_ward_common/ward_common.dart';
 import '../../widgets/buttons.dart';
@@ -59,9 +60,9 @@ class _DesignCvsScreenState extends State<DesignCvsScreen> {
   }
 
   void _showSnackBar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message)),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 
   @override
@@ -131,22 +132,22 @@ class _DesignCvsScreenState extends State<DesignCvsScreen> {
         Card(
           child: Padding(
             padding: const EdgeInsets.all(16.0),
-            child: TextField(
-              controller: _outputController,
-              maxLines: 23,
-              readOnly: false,
-              decoration: InputDecoration(
-                border: const OutlineInputBorder(),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(
-                    color: Theme.of(context).colorScheme.tertiary,
+            child: ControlSemantics(
+              label: 'Generated CVS protocol',
+              child: TextField(
+                controller: _outputController,
+                maxLines: 23,
+                readOnly: false,
+                decoration: InputDecoration(
+                  border: const OutlineInputBorder(),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                      color: Theme.of(context).colorScheme.tertiary,
+                    ),
                   ),
+                  hintText: 'Generated protocol will appear here...',
                 ),
-                hintText: 'Generated protocol will appear here...',
-              ),
-              style: const TextStyle(
-                fontFamily: 'monospace',
-                fontSize: 14,
+                style: const TextStyle(fontFamily: 'monospace', fontSize: 14),
               ),
             ),
           ),
@@ -158,16 +159,20 @@ class _DesignCvsScreenState extends State<DesignCvsScreen> {
             Row(
               children: [
                 GenerateButton(
+                  semanticLabel: 'Generate CVS protocol',
                   onPressed: _isSelectionComplete ? _generateProtocol : null,
                 ),
                 const SizedBox(width: 8),
-                CopyButton(controller: _outputController),
+                CopyButton(
+                  semanticLabel: 'Copy CVS protocol',
+                  controller: _outputController,
+                ),
               ],
             ),
             ElevatedButton.icon(
               onPressed: _resetInputs,
               icon: const Icon(Icons.refresh),
-              label: const Text('Reset'),
+              label: const Text('Reset', semanticsLabel: 'Reset CVS protocol'),
             ),
           ],
         ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../widgets/control_semantics.dart';
 import '../../../services/design/designer/designer.dart';
 import '_designer_input.dart';
 import '../../widgets/buttons.dart';
@@ -11,7 +12,8 @@ class DesignERScreen extends StatefulWidget {
 }
 
 class _DesignERScreenState extends State<DesignERScreen> {
-  final GlobalKey<DesignERInputState> _inputDesignKey = GlobalKey<DesignERInputState>();
+  final GlobalKey<DesignERInputState> _inputDesignKey =
+      GlobalKey<DesignERInputState>();
   final TextEditingController _outputController = TextEditingController();
 
   // State to hold current input values
@@ -73,9 +75,9 @@ class _DesignERScreenState extends State<DesignERScreen> {
 
   /// Show snackbar message
   void _showSnackBar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message)),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 
   @override
@@ -121,10 +123,7 @@ class _DesignERScreenState extends State<DesignERScreen> {
           const SizedBox(width: 16),
 
           // Right side - Output and buttons
-          Expanded(
-            flex: 1,
-            child: _buildOutputSection(),
-          ),
+          Expanded(flex: 1, child: _buildOutputSection()),
         ],
       ),
     );
@@ -171,20 +170,25 @@ class _DesignERScreenState extends State<DesignERScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                TextField(
-                  controller: _outputController,
-                  maxLines: 23,
-                  readOnly: false,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Theme.of(context).colorScheme.tertiary), // Colors.deepPurple
+                ControlSemantics(
+                  label: 'Generated ER protocol',
+                  child: TextField(
+                    controller: _outputController,
+                    maxLines: 23,
+                    readOnly: false,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Theme.of(context).colorScheme.tertiary,
+                        ), // Colors.deepPurple
+                      ),
+                      hintText: 'Generated protocol will appear here...',
                     ),
-                    hintText: 'Generated protocol will appear here...',
-                  ),
-                  style: const TextStyle(
-                    fontFamily: 'monospace',
-                    fontSize: 14,
+                    style: const TextStyle(
+                      fontFamily: 'monospace',
+                      fontSize: 14,
+                    ),
                   ),
                 ),
               ],
@@ -202,10 +206,12 @@ class _DesignERScreenState extends State<DesignERScreen> {
             Row(
               children: [
                 GenerateButton(
+                  semanticLabel: 'Generate ER protocol',
                   onPressed: _isSelectionComplete ? _generateProtocol : null,
                 ),
                 const SizedBox(width: 8),
                 CopyButton(
+                  semanticLabel: 'Copy ER protocol',
                   controller: _outputController,
                 ),
               ],
@@ -215,7 +221,7 @@ class _DesignERScreenState extends State<DesignERScreen> {
             ElevatedButton.icon(
               onPressed: _resetInputs,
               icon: const Icon(Icons.refresh),
-              label: const Text('Reset'),
+              label: const Text('Reset', semanticsLabel: 'Reset ER protocol'),
             ),
           ],
         ),

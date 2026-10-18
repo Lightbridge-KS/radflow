@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../widgets/control_semantics.dart';
 import '../../../core/result.dart';
 import '../../../services/calculator/spine_calculator.dart';
 import '../../../services/calculator/shared/template_renderer.dart';
@@ -38,7 +39,9 @@ class _AppSpineCalculatorState extends ConsumerState<AppSpineCalculator> {
       case Success(value: final data):
         // Render template
         final service = ref.read(snippetTemplatesServiceProvider);
-        final template = await service.getTemplate(SnippetTemplatesService.spineHeightLossId);
+        final template = await service.getTemplate(
+          SnippetTemplatesService.spineHeightLossId,
+        );
 
         if (!mounted) return;
 
@@ -75,9 +78,9 @@ class _AppSpineCalculatorState extends ConsumerState<AppSpineCalculator> {
       children: [
         Text(
           'Spine Height Loss',
-          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
+          style: Theme.of(
+            context,
+          ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 16),
         Row(
@@ -87,38 +90,44 @@ class _AppSpineCalculatorState extends ConsumerState<AppSpineCalculator> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  TextField(
-                    controller: _normalController,
-                    decoration: const InputDecoration(
-                      labelText: 'Input: Normal height (cm)',
-                      hintText: 'Normal height in cm',
-                      border: OutlineInputBorder(),
+                  ControlSemantics(
+                    label: 'Spine normal height (cm)',
+                    child: TextField(
+                      controller: _normalController,
+                      decoration: const InputDecoration(
+                        labelText: 'Input: Normal height (cm)',
+                        hintText: 'Normal height in cm',
+                        border: OutlineInputBorder(),
+                      ),
+                      onSubmitted: (_) => _calculate(),
                     ),
-                    onSubmitted: (_) => _calculate(),
                   ),
                   const SizedBox(height: 12),
-                  TextField(
-                    controller: _collapsedController,
-                    decoration: const InputDecoration(
-                      labelText: 'Input: Collapsed height (cm)',
-                      hintText: 'Collapsed height in cm',
-                      border: OutlineInputBorder(),
+                  ControlSemantics(
+                    label: 'Spine collapsed height (cm)',
+                    child: TextField(
+                      controller: _collapsedController,
+                      decoration: const InputDecoration(
+                        labelText: 'Input: Collapsed height (cm)',
+                        hintText: 'Collapsed height in cm',
+                        border: OutlineInputBorder(),
+                      ),
+                      onSubmitted: (_) => _calculate(),
                     ),
-                    onSubmitted: (_) => _calculate(),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     'Input height in centimeter and use two values to calculate mean height, separated by spaces or comma (e.g. 10 12)',
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Colors.grey,
-                    ),
+                    style: Theme.of(
+                      context,
+                    ).textTheme.bodySmall?.copyWith(color: Colors.grey),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     'Mild (20-25%), Moderate (25-40%), Severe (>40%)',
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Colors.grey,
-                    ),
+                    style: Theme.of(
+                      context,
+                    ).textTheme.bodySmall?.copyWith(color: Colors.grey),
                   ),
                 ],
               ),
@@ -128,13 +137,16 @@ class _AppSpineCalculatorState extends ConsumerState<AppSpineCalculator> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  TextField(
-                    controller: _outputController,
-                    decoration: const InputDecoration(
-                      labelText: 'Height loss snippet',
-                      border: OutlineInputBorder(),
+                  ControlSemantics(
+                    label: 'Height loss snippet',
+                    child: TextField(
+                      controller: _outputController,
+                      decoration: const InputDecoration(
+                        labelText: 'Height loss snippet',
+                        border: OutlineInputBorder(),
+                      ),
+                      readOnly: false,
                     ),
-                    readOnly: false,
                   ),
                   const SizedBox(height: 8),
                   Row(
@@ -142,15 +154,24 @@ class _AppSpineCalculatorState extends ConsumerState<AppSpineCalculator> {
                     children: [
                       Row(
                         children: [
-                          GenerateButton(onPressed: _calculate),
+                          GenerateButton(
+                            semanticLabel: 'Generate spine height loss',
+                            onPressed: _calculate,
+                          ),
                           const SizedBox(width: 8),
-                          CopyButton(controller: _outputController),
+                          CopyButton(
+                            semanticLabel: 'Copy spine height loss',
+                            controller: _outputController,
+                          ),
                         ],
                       ),
                       ElevatedButton.icon(
                         onPressed: _resetInputs,
                         icon: const Icon(Icons.refresh),
-                        label: const Text('Reset'),
+                        label: const Text(
+                          'Reset',
+                          semanticsLabel: 'Reset spine height loss',
+                        ),
                       ),
                     ],
                   ),

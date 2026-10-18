@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../widgets/control_semantics.dart';
 import '../../providers/snippet_templates_provider.dart';
 import '../../../services/preferences/snippet_templates_service.dart';
 import '../../../services/calculator/shared/template_renderer.dart';
@@ -53,7 +54,9 @@ class _CalculatorTemplateEditorScreenState
 
   /// Updates the preview with the current template and sample data
   void _updatePreview() {
-    final metadata = ref.read(calculatorMetadataProvider(_selectedCalculatorId));
+    final metadata = ref.read(
+      calculatorMetadataProvider(_selectedCalculatorId),
+    );
 
     try {
       final preview = TemplateRenderer.render(
@@ -136,9 +139,7 @@ class _CalculatorTemplateEditorScreenState
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Template reset to default'),
-          ),
+          const SnackBar(content: Text('Template reset to default')),
         );
       }
     }
@@ -157,16 +158,29 @@ class _CalculatorTemplateEditorScreenState
   @override
   Widget build(BuildContext context) {
     final calculatorIds = ref.watch(allCalculatorIdsProvider);
-    final metadata = ref.watch(calculatorMetadataProvider(_selectedCalculatorId));
+    final metadata = ref.watch(
+      calculatorMetadataProvider(_selectedCalculatorId),
+    );
     final templateAsync = ref.watch(templateProvider(_selectedCalculatorId));
 
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          tooltip: 'Close calculator templates',
+          icon: const Icon(
+            Icons.close,
+            semanticLabel: 'Close calculator templates',
+          ),
+          onPressed: () => Navigator.of(context).maybePop(),
+        ),
         title: const Text('Calculator Templates'),
         actions: [
           IconButton(
             onPressed: _resetToDefault,
-            icon: const Icon(Icons.refresh),
+            icon: const Icon(
+              Icons.refresh,
+              semanticLabel: 'Reset calculator template to default',
+            ),
             tooltip: 'Reset to Default',
           ),
           const SizedBox(width: 8),
@@ -199,17 +213,22 @@ class _CalculatorTemplateEditorScreenState
                           ),
                           const SizedBox(width: 16),
                           Expanded(
-                            child: DropdownButton<String>(
-                              value: _selectedCalculatorId,
-                              isExpanded: true,
-                              onChanged: _onCalculatorChanged,
-                              items: calculatorIds.map((id) {
-                                final meta = ref.read(calculatorMetadataProvider(id));
-                                return DropdownMenuItem(
-                                  value: id,
-                                  child: Text(meta.name),
-                                );
-                              }).toList(),
+                            child: ControlSemantics(
+                              label: 'Calculator template selection',
+                              child: DropdownButton<String>(
+                                value: _selectedCalculatorId,
+                                isExpanded: true,
+                                onChanged: _onCalculatorChanged,
+                                items: calculatorIds.map((id) {
+                                  final meta = ref.read(
+                                    calculatorMetadataProvider(id),
+                                  );
+                                  return DropdownMenuItem(
+                                    value: id,
+                                    child: Text(meta.name),
+                                  );
+                                }).toList(),
+                              ),
                             ),
                           ),
                         ],
@@ -227,22 +246,22 @@ class _CalculatorTemplateEditorScreenState
                         children: [
                           Text(
                             'Available Variables',
-                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                ),
+                            style: Theme.of(context).textTheme.titleMedium
+                                ?.copyWith(fontWeight: FontWeight.bold),
                           ),
                           const SizedBox(height: 12),
                           Text(
                             'Use these variables in your template with {{variable}} syntax:',
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                  color: Colors.grey[600],
-                                ),
+                            style: Theme.of(context).textTheme.bodySmall
+                                ?.copyWith(color: Colors.grey[600]),
                           ),
                           const SizedBox(height: 12),
                           Wrap(
                             spacing: 8,
                             runSpacing: 8,
-                            children: metadata.availableVariables.map((variable) {
+                            children: metadata.availableVariables.map((
+                              variable,
+                            ) {
                               return Tooltip(
                                 message: variable.description,
                                 child: Chip(
@@ -265,20 +284,23 @@ class _CalculatorTemplateEditorScreenState
                   Text(
                     'Template',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   const SizedBox(height: 8),
-                  TextField(
-                    controller: _templateController,
-                    maxLines: 6,
-                    decoration: InputDecoration(
-                      border: const OutlineInputBorder(),
-                      hintText: 'Enter Mustache template...',
-                      errorText: _errorText,
-                      helperText: 'Use {{variable}} for interpolation',
+                  ControlSemantics(
+                    label: 'Mustache template',
+                    child: TextField(
+                      controller: _templateController,
+                      maxLines: 6,
+                      decoration: InputDecoration(
+                        border: const OutlineInputBorder(),
+                        hintText: 'Enter Mustache template...',
+                        errorText: _errorText,
+                        helperText: 'Use {{variable}} for interpolation',
+                      ),
+                      onChanged: (_) => _updatePreview(),
                     ),
-                    onChanged: (_) => _updatePreview(),
                   ),
                   const SizedBox(height: 24),
 
@@ -286,12 +308,14 @@ class _CalculatorTemplateEditorScreenState
                   Text(
                     'Preview (with sample data)',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   const SizedBox(height: 8),
                   Card(
-                    color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.surfaceContainerHighest,
                     child: Container(
                       width: double.infinity,
                       padding: const EdgeInsets.all(16.0),
@@ -343,9 +367,8 @@ class _CalculatorTemplateEditorScreenState
           ),
         ),
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, stack) => Center(
-          child: Text('Error loading template: $err'),
-        ),
+        error: (err, stack) =>
+            Center(child: Text('Error loading template: $err')),
       ),
     );
   }

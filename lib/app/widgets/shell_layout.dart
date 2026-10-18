@@ -10,18 +10,14 @@ import '../router.dart';
 class ShellLayout extends StatelessWidget {
   final Widget child;
 
-  const ShellLayout({
-    super.key,
-    required this.child,
-  });
+  const ShellLayout({super.key, required this.child});
 
   Widget _getTitleForRoute(String path) {
-
     if (path == Routes.home) {
       return Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text('RadFlow', style: TextStyle(fontWeight: FontWeight.bold),),
+          Text('RadFlow', style: TextStyle(fontWeight: FontWeight.bold)),
           SizedBox(width: 10),
           VersionWidget(),
         ],
@@ -42,7 +38,6 @@ class ShellLayout extends StatelessWidget {
       titleMap[path] ?? 'RadFlow',
       style: TextStyle(fontWeight: FontWeight.bold),
     );
-    
   }
 
   @override
@@ -54,8 +49,17 @@ class ShellLayout extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
+        leading: Builder(
+          builder: (context) => IconButton(
+            tooltip: 'Open navigation menu',
+            icon: const Icon(Icons.menu, semanticLabel: 'Open navigation menu'),
+            onPressed: () => Scaffold.of(context).openDrawer(),
+          ),
+        ),
         title: _getTitleForRoute(currentPath),
-        backgroundColor: isHomePage ? Colors.transparent : colorScheme.inversePrimary,
+        backgroundColor: isHomePage
+            ? Colors.transparent
+            : colorScheme.inversePrimary,
         elevation: isHomePage ? 0 : null,
         flexibleSpace: isHomePage
             ? Container(
