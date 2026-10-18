@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../widgets/control_semantics.dart';
 import '../../../core/result.dart';
 import '../../../services/calculator/volume_calculator.dart';
 import '../../../services/calculator/shared/template_renderer.dart';
@@ -12,10 +13,12 @@ class AppProstateVolumeCalculator extends ConsumerStatefulWidget {
   const AppProstateVolumeCalculator({super.key});
 
   @override
-  ConsumerState<AppProstateVolumeCalculator> createState() => _AppProstateVolumeCalculatorState();
+  ConsumerState<AppProstateVolumeCalculator> createState() =>
+      _AppProstateVolumeCalculatorState();
 }
 
-class _AppProstateVolumeCalculatorState extends ConsumerState<AppProstateVolumeCalculator> {
+class _AppProstateVolumeCalculatorState
+    extends ConsumerState<AppProstateVolumeCalculator> {
   final TextEditingController _inputController = TextEditingController();
   final TextEditingController _outputController = TextEditingController();
 
@@ -27,13 +30,17 @@ class _AppProstateVolumeCalculatorState extends ConsumerState<AppProstateVolumeC
   }
 
   Future<void> _calculate() async {
-    final result = VolumeCalculator.getProstateVolumeDataFromString(_inputController.text);
+    final result = VolumeCalculator.getProstateVolumeDataFromString(
+      _inputController.text,
+    );
 
     switch (result) {
       case Success(value: final data):
         // Render template
         final service = ref.read(snippetTemplatesServiceProvider);
-        final template = await service.getTemplate(SnippetTemplatesService.prostateVolumeId);
+        final template = await service.getTemplate(
+          SnippetTemplatesService.prostateVolumeId,
+        );
 
         if (!mounted) return;
 
@@ -69,9 +76,9 @@ class _AppProstateVolumeCalculatorState extends ConsumerState<AppProstateVolumeC
       children: [
         Text(
           'Prostate Volume',
-          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
+          style: Theme.of(
+            context,
+          ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 16),
         Row(
@@ -81,28 +88,31 @@ class _AppProstateVolumeCalculatorState extends ConsumerState<AppProstateVolumeC
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  TextField(
-                    controller: _inputController,
-                    decoration: const InputDecoration(
-                      labelText: 'Input: Diameters in 3 planes (cm)',
-                      hintText: 'e.g. 4.4 4.5 4.6',
-                      border: OutlineInputBorder(),
+                  ControlSemantics(
+                    label: 'Prostate diameters (cm)',
+                    child: TextField(
+                      controller: _inputController,
+                      decoration: const InputDecoration(
+                        labelText: 'Input: Diameters in 3 planes (cm)',
+                        hintText: 'e.g. 4.4 4.5 4.6',
+                        border: OutlineInputBorder(),
+                      ),
+                      onSubmitted: (_) => _calculate(),
                     ),
-                    onSubmitted: (_) => _calculate(),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     'Input perpendicular diameters (cm) in 3 planes, separated by spaces or comma (e.g. 4.4 4.5 4.6)',
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Colors.grey,
-                    ),
+                    style: Theme.of(
+                      context,
+                    ).textTheme.bodySmall?.copyWith(color: Colors.grey),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     'Normal (<25 ml), Prominent (25-40 ml), Enlarged (>40 ml)',
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Colors.grey,
-                    ),
+                    style: Theme.of(
+                      context,
+                    ).textTheme.bodySmall?.copyWith(color: Colors.grey),
                   ),
                 ],
               ),
@@ -112,13 +122,16 @@ class _AppProstateVolumeCalculatorState extends ConsumerState<AppProstateVolumeC
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  TextField(
-                    controller: _outputController,
-                    decoration: const InputDecoration(
-                      labelText: 'Prostate volume snippet',
-                      border: OutlineInputBorder(),
+                  ControlSemantics(
+                    label: 'Prostate volume snippet',
+                    child: TextField(
+                      controller: _outputController,
+                      decoration: const InputDecoration(
+                        labelText: 'Prostate volume snippet',
+                        border: OutlineInputBorder(),
+                      ),
+                      readOnly: false,
                     ),
-                    readOnly: false,
                   ),
                   const SizedBox(height: 8),
                   Row(
@@ -126,15 +139,24 @@ class _AppProstateVolumeCalculatorState extends ConsumerState<AppProstateVolumeC
                     children: [
                       Row(
                         children: [
-                          GenerateButton(onPressed: _calculate),
+                          GenerateButton(
+                            semanticLabel: 'Generate prostate volume',
+                            onPressed: _calculate,
+                          ),
                           const SizedBox(width: 8),
-                          CopyButton(controller: _outputController),
+                          CopyButton(
+                            semanticLabel: 'Copy prostate volume',
+                            controller: _outputController,
+                          ),
                         ],
                       ),
                       ElevatedButton.icon(
                         onPressed: _resetInputs,
                         icon: const Icon(Icons.refresh),
-                        label: const Text('Reset'),
+                        label: const Text(
+                          'Reset',
+                          semanticsLabel: 'Reset prostate volume',
+                        ),
                       ),
                     ],
                   ),

@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'control_semantics.dart';
 
 // ===== SIMPLIFIED REUSABLE COMPONENT =====
 /// A clean, focused three-level dependent dropdown component.
-/// 
+///
 /// This component ONLY handles dropdown logic and UI.
 /// It returns selections as a Map and lets parent widgets handle display logic.
-/// 
+///
 /// Key benefits:
 /// - Single responsibility: only dropdown functionality
 /// - Highly reusable: no unwanted UI elements
@@ -15,20 +16,20 @@ import 'package:flutter/material.dart';
 class ThreeLevelDropdowns extends StatefulWidget {
   /// Hierarchical choice structure using internal IDs
   final Map<String, Map<String, List<String>>> choiceIdMap;
-  
+
   /// Mapping from internal IDs to user-visible display names
   final Map<String, String> idDispMap;
-  
+
   /// Labels for each dropdown level (optional)
   final String? level1Label;
   final String? level2Label;
   final String? level3Label;
-  
+
   /// Hint texts for each dropdown (optional)
   final String? level1Hint;
   final String? level2Hint;
   final String? level3Hint;
-  
+
   /// Callback function that returns selection as Map
   /// Format: {'level1': id, 'level2': id, 'level3': id}
   final Function(Map<String, String?>) onSelectionChanged;
@@ -71,7 +72,7 @@ class _ThreeLevelDropdownsState extends State<ThreeLevelDropdowns> {
   void _onLevel1Changed(String? newLevel1Id) {
     setState(() {
       _selectedLevel1Id = newLevel1Id;
-      _selectedLevel2Id = null;  // Reset dependent selections
+      _selectedLevel2Id = null; // Reset dependent selections
       _selectedLevel3Id = null;
     });
     _notifySelectionChanged();
@@ -80,7 +81,7 @@ class _ThreeLevelDropdownsState extends State<ThreeLevelDropdowns> {
   void _onLevel2Changed(String? newLevel2Id) {
     setState(() {
       _selectedLevel2Id = newLevel2Id;
-      _selectedLevel3Id = null;  // Reset dependent selection
+      _selectedLevel3Id = null; // Reset dependent selection
     });
     _notifySelectionChanged();
   }
@@ -108,10 +109,12 @@ class _ThreeLevelDropdownsState extends State<ThreeLevelDropdowns> {
 
   /// Builds dropdown menu entries from a list of IDs
   List<DropdownMenuEntry<String>> _buildMenuEntries(List<String> ids) {
-    return ids.map((String id) => DropdownMenuEntry<String>(
-      value: id,
-      label: _getDisplayName(id),
-    )).toList();
+    return ids
+        .map(
+          (String id) =>
+              DropdownMenuEntry<String>(value: id, label: _getDisplayName(id)),
+        )
+        .toList();
   }
 
   @override
@@ -122,7 +125,9 @@ class _ThreeLevelDropdownsState extends State<ThreeLevelDropdowns> {
         // Level 1 Dropdown
         _buildDropdownSection(
           title: widget.level1Label,
-          subtitle: widget.level1Label != null ? 'Choose your ${widget.level1Label!.toLowerCase()}' : null,
+          subtitle: widget.level1Label != null
+              ? 'Choose your ${widget.level1Label!.toLowerCase()}'
+              : null,
           hintText: widget.level1Hint ?? 'Category',
           value: _selectedLevel1Id,
           items: widget.choiceIdMap.keys.toList(),
@@ -175,10 +180,7 @@ class _ThreeLevelDropdownsState extends State<ThreeLevelDropdowns> {
         if (title != null) ...[
           Text(
             title,
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-            ),
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 4),
         ],
@@ -192,13 +194,18 @@ class _ThreeLevelDropdownsState extends State<ThreeLevelDropdowns> {
           ),
           const SizedBox(height: 8),
         ],
-        DropdownMenu<String>(
-          width: MediaQuery.of(context).size.width * 0.5, // Adjust this factor as needed
-          hintText: hintText,
-          onSelected: isEnabled ? onChanged : null,
-          enabled: isEnabled,
-          label: Text(hintText), 
-          dropdownMenuEntries: _buildMenuEntries(items),
+        ControlSemantics(
+          label: hintText,
+          child: DropdownMenu<String>(
+            width:
+                MediaQuery.of(context).size.width *
+                0.5, // Adjust this factor as needed
+            hintText: hintText,
+            onSelected: isEnabled ? onChanged : null,
+            enabled: isEnabled,
+            label: Text(hintText),
+            dropdownMenuEntries: _buildMenuEntries(items),
+          ),
         ),
       ],
     );

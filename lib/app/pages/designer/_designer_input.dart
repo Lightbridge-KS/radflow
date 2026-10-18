@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import '../../widgets/control_semantics.dart';
 import '../../../services/design/designer/designer_protocol_data.dart';
 import '../../../services/design/_utils.dart';
 import '../../widgets/dropdowns_three.dart';
@@ -8,10 +9,7 @@ import '../../widgets/dropdowns_three.dart';
 class DesignERInput extends StatefulWidget {
   final Function(Map<String, dynamic>) onSelectionChanged;
 
-  const DesignERInput({
-    super.key,
-    required this.onSelectionChanged,
-  });
+  const DesignERInput({super.key, required this.onSelectionChanged});
 
   @override
   State<DesignERInput> createState() => DesignERInputState();
@@ -23,11 +21,14 @@ class DesignERInputState extends State<DesignERInput> {
   final TextEditingController _egfrDateController = TextEditingController();
   final TextEditingController _egfrValueController = TextEditingController();
   final TextEditingController _renalPremedController = TextEditingController();
-  final TextEditingController _allergyPremedController = TextEditingController();
+  final TextEditingController _allergyPremedController =
+      TextEditingController();
   final TextEditingController _precautionController = TextEditingController();
   final TextEditingController _specialInstController = TextEditingController();
-  final TextEditingController _refPhysicianNameController = TextEditingController();
-  final TextEditingController _refPhysicianTelController = TextEditingController();
+  final TextEditingController _refPhysicianNameController =
+      TextEditingController();
+  final TextEditingController _refPhysicianTelController =
+      TextEditingController();
 
   // Checkbox states
   bool _pregnancy = false;
@@ -96,11 +97,7 @@ class DesignERInputState extends State<DesignERInput> {
       _pregnancy = false;
       _hasETT = false;
       _hasC1 = false;
-      _protocolSelection = {
-        'level1': null,
-        'level2': null,
-        'level3': null,
-      };
+      _protocolSelection = {'level1': null, 'level2': null, 'level3': null};
     });
     _notifySelectionChanged();
   }
@@ -135,6 +132,7 @@ class DesignERInputState extends State<DesignERInput> {
               child: Row(
                 children: [
                   CupertinoCheckbox(
+                    semanticLabel: 'ETT',
                     value: _hasETT,
                     onChanged: (value) {
                       setState(() {
@@ -144,7 +142,7 @@ class DesignERInputState extends State<DesignERInput> {
                     },
                   ),
                   const SizedBox(width: 8),
-                  const Text('ETT'),
+                  const ExcludeSemantics(child: Text('ETT')),
                 ],
               ),
             ),
@@ -153,6 +151,7 @@ class DesignERInputState extends State<DesignERInput> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   CupertinoCheckbox(
+                    semanticLabel: 'C1',
                     value: _hasC1,
                     onChanged: (value) {
                       setState(() {
@@ -162,7 +161,7 @@ class DesignERInputState extends State<DesignERInput> {
                     },
                   ),
                   const SizedBox(width: 8),
-                  const Text('C1'),
+                  const ExcludeSemantics(child: Text('C1')),
                 ],
               ),
             ),
@@ -170,6 +169,7 @@ class DesignERInputState extends State<DesignERInput> {
               child: Row(
                 children: [
                   CupertinoCheckbox(
+                    semanticLabel: 'Pregnancy',
                     value: _pregnancy,
                     onChanged: (value) {
                       setState(() {
@@ -179,7 +179,7 @@ class DesignERInputState extends State<DesignERInput> {
                     },
                   ),
                   const SizedBox(width: 8),
-                  const Text('Pregnancy'),
+                  const ExcludeSemantics(child: Text('Pregnancy')),
                 ],
               ),
             ),
@@ -192,25 +192,31 @@ class DesignERInputState extends State<DesignERInput> {
         Row(
           children: [
             Expanded(
-              child: TextField(
-                controller: _egfrValueController,
-                decoration: const InputDecoration(
-                  labelText: 'eGFR',
-                  hintText: 'eGFR Value',
-                  border: OutlineInputBorder(),
+              child: ControlSemantics(
+                label: 'eGFR',
+                child: TextField(
+                  controller: _egfrValueController,
+                  decoration: const InputDecoration(
+                    labelText: 'eGFR',
+                    hintText: 'eGFR Value',
+                    border: OutlineInputBorder(),
+                  ),
+                  onChanged: (_) => _notifySelectionChanged(),
                 ),
-                onChanged: (_) => _notifySelectionChanged(),
               ),
             ),
             const SizedBox(width: 8),
             Expanded(
-              child: TextField(
-                controller: _egfrDateController,
-                decoration: const InputDecoration(
-                  labelText: 'eGFR Date',
-                  border: OutlineInputBorder(),
+              child: ControlSemantics(
+                label: 'eGFR Date',
+                child: TextField(
+                  controller: _egfrDateController,
+                  decoration: const InputDecoration(
+                    labelText: 'eGFR Date',
+                    border: OutlineInputBorder(),
+                  ),
+                  onChanged: (_) => _notifySelectionChanged(),
                 ),
-                onChanged: (_) => _notifySelectionChanged(),
               ),
             ),
           ],
@@ -222,26 +228,32 @@ class DesignERInputState extends State<DesignERInput> {
         Row(
           children: [
             Expanded(
-              child: TextField(
-                controller: _renalPremedController,
-                decoration: const InputDecoration(
-                  labelText: 'Renal Premed',
-                  hintText: 'Renal Premed',
-                  border: OutlineInputBorder(),
+              child: ControlSemantics(
+                label: 'Renal Premed',
+                child: TextField(
+                  controller: _renalPremedController,
+                  decoration: const InputDecoration(
+                    labelText: 'Renal Premed',
+                    hintText: 'Renal Premed',
+                    border: OutlineInputBorder(),
+                  ),
+                  onChanged: (_) => _notifySelectionChanged(),
                 ),
-                onChanged: (_) => _notifySelectionChanged(),
               ),
             ),
             const SizedBox(width: 8),
             Expanded(
-              child: TextField(
-                controller: _allergyPremedController,
-                decoration: const InputDecoration(
-                  labelText: 'Allergy Premed',
-                  hintText: 'Allergy Premed',
-                  border: OutlineInputBorder(),
+              child: ControlSemantics(
+                label: 'Allergy Premed',
+                child: TextField(
+                  controller: _allergyPremedController,
+                  decoration: const InputDecoration(
+                    labelText: 'Allergy Premed',
+                    hintText: 'Allergy Premed',
+                    border: OutlineInputBorder(),
+                  ),
+                  onChanged: (_) => _notifySelectionChanged(),
                 ),
-                onChanged: (_) => _notifySelectionChanged(),
               ),
             ),
           ],
@@ -250,14 +262,17 @@ class DesignERInputState extends State<DesignERInput> {
         const SizedBox(height: 8),
 
         // NPO time
-        TextField(
-          controller: _npoTimeController,
-          decoration: const InputDecoration(
-            labelText: 'NPO time',
-            hintText: 'NPO time',
-            border: OutlineInputBorder(),
+        ControlSemantics(
+          label: 'NPO time',
+          child: TextField(
+            controller: _npoTimeController,
+            decoration: const InputDecoration(
+              labelText: 'NPO time',
+              hintText: 'NPO time',
+              border: OutlineInputBorder(),
+            ),
+            onChanged: (_) => _notifySelectionChanged(),
           ),
-          onChanged: (_) => _notifySelectionChanged(),
         ),
 
         const SizedBox(height: 8),
@@ -266,26 +281,32 @@ class DesignERInputState extends State<DesignERInput> {
         Row(
           children: [
             Expanded(
-              child: TextField(
-                controller: _precautionController,
-                decoration: const InputDecoration(
-                  labelText: 'Precaution',
-                  hintText: 'Precaution',
-                  border: OutlineInputBorder(),
+              child: ControlSemantics(
+                label: 'Precaution',
+                child: TextField(
+                  controller: _precautionController,
+                  decoration: const InputDecoration(
+                    labelText: 'Precaution',
+                    hintText: 'Precaution',
+                    border: OutlineInputBorder(),
+                  ),
+                  onChanged: (_) => _notifySelectionChanged(),
                 ),
-                onChanged: (_) => _notifySelectionChanged(),
               ),
             ),
             const SizedBox(width: 8),
             Expanded(
-              child: TextField(
-                controller: _specialInstController,
-                decoration: const InputDecoration(
-                  labelText: 'Special Instruction',
-                  hintText: 'Special Instr.',
-                  border: OutlineInputBorder(),
+              child: ControlSemantics(
+                label: 'Special Instruction',
+                child: TextField(
+                  controller: _specialInstController,
+                  decoration: const InputDecoration(
+                    labelText: 'Special Instruction',
+                    hintText: 'Special Instr.',
+                    border: OutlineInputBorder(),
+                  ),
+                  onChanged: (_) => _notifySelectionChanged(),
                 ),
-                onChanged: (_) => _notifySelectionChanged(),
               ),
             ),
           ],
@@ -294,27 +315,33 @@ class DesignERInputState extends State<DesignERInput> {
         const SizedBox(height: 8),
 
         // Ref physician name
-        TextField(
-          controller: _refPhysicianNameController,
-          decoration: const InputDecoration(
-            labelText: 'Ref physician name',
-            hintText: 'Name of Ref physician',
-            border: OutlineInputBorder(),
+        ControlSemantics(
+          label: 'Ref physician name',
+          child: TextField(
+            controller: _refPhysicianNameController,
+            decoration: const InputDecoration(
+              labelText: 'Ref physician name',
+              hintText: 'Name of Ref physician',
+              border: OutlineInputBorder(),
+            ),
+            onChanged: (_) => _notifySelectionChanged(),
           ),
-          onChanged: (_) => _notifySelectionChanged(),
         ),
 
         const SizedBox(height: 8),
 
         // Ref physician tel
-        TextField(
-          controller: _refPhysicianTelController,
-          decoration: const InputDecoration(
-            labelText: 'Ref physician tel',
-            hintText: 'PCT of Ref physician',
-            border: OutlineInputBorder(),
+        ControlSemantics(
+          label: 'Ref physician tel',
+          child: TextField(
+            controller: _refPhysicianTelController,
+            decoration: const InputDecoration(
+              labelText: 'Ref physician tel',
+              hintText: 'PCT of Ref physician',
+              border: OutlineInputBorder(),
+            ),
+            onChanged: (_) => _notifySelectionChanged(),
           ),
-          onChanged: (_) => _notifySelectionChanged(),
         ),
       ],
     );

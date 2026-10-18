@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'control_semantics.dart';
 
 /// A clean, focused two-level dependent dropdown component.
 ///
@@ -87,10 +88,10 @@ class TwoLevelDropdownsState extends State<TwoLevelDropdowns> {
 
   List<DropdownMenuEntry<String>> _buildMenuEntries(List<String> ids) {
     return ids
-        .map((String id) => DropdownMenuEntry<String>(
-              value: id,
-              label: _getDisplayName(id),
-            ))
+        .map(
+          (String id) =>
+              DropdownMenuEntry<String>(value: id, label: _getDisplayName(id)),
+        )
         .toList();
   }
 
@@ -139,10 +140,7 @@ class TwoLevelDropdownsState extends State<TwoLevelDropdowns> {
         if (title != null) ...[
           Text(
             title,
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-            ),
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 4),
         ],
@@ -156,13 +154,16 @@ class TwoLevelDropdownsState extends State<TwoLevelDropdowns> {
           ),
           const SizedBox(height: 8),
         ],
-        DropdownMenu<String>(
-          width: MediaQuery.of(context).size.width * 0.5,
-          hintText: hintText,
-          onSelected: isEnabled ? onChanged : null,
-          enabled: isEnabled,
-          label: Text(hintText),
-          dropdownMenuEntries: _buildMenuEntries(items),
+        ControlSemantics(
+          label: hintText,
+          child: DropdownMenu<String>(
+            width: MediaQuery.of(context).size.width * 0.5,
+            hintText: hintText,
+            onSelected: isEnabled ? onChanged : null,
+            enabled: isEnabled,
+            label: Text(hintText),
+            dropdownMenuEntries: _buildMenuEntries(items),
+          ),
         ),
       ],
     );

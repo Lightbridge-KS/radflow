@@ -12,7 +12,6 @@ class VersionWidget extends ConsumerWidget {
 
     return Consumer(
       builder: (context, ref, child) {
-
         return Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -25,16 +24,21 @@ class VersionWidget extends ConsumerWidget {
               ),
             ),
             const SizedBox(width: 4),
-            GestureDetector(
-              onTap: () => _showVersionDialog(context, ref),
-              child: Tooltip(
-                message: "Version Info...",
-                child: MouseRegion(
-                  cursor: SystemMouseCursors.click,
-                  child: Icon(
-                    Icons.info_outline,
-                    color: colorScheme.surfaceTint,
-                    size: 12,
+            Semantics(
+              container: true,
+              button: true,
+              label: 'Version information',
+              child: GestureDetector(
+                onTap: () => _showVersionDialog(context, ref),
+                child: Tooltip(
+                  message: "Version Info...",
+                  child: MouseRegion(
+                    cursor: SystemMouseCursors.click,
+                    child: Icon(
+                      Icons.info_outline,
+                      color: colorScheme.surfaceTint,
+                      size: 12,
+                    ),
                   ),
                 ),
               ),
@@ -66,8 +70,12 @@ class VersionWidget extends ConsumerWidget {
             SizedBox(height: 16),
             Text(
               'Radiology AI Unit © ${DateTime.now().year}',
-              style: TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: colorScheme.primary),
-            )
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w400,
+                color: colorScheme.primary,
+              ),
+            ),
           ],
         ),
         actions: [

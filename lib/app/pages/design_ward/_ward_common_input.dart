@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import '../../widgets/control_semantics.dart';
 import '../../../services/design/design_ward_common/ward_common.dart';
 
 /// Reusable input block for Protocol Ward screens: a "Check ภาพ" checkbox
@@ -17,11 +18,7 @@ class WardCommonInput extends StatefulWidget {
   /// mouse click after typing.
   final VoidCallback? onSubmit;
 
-  const WardCommonInput({
-    super.key,
-    required this.onChanged,
-    this.onSubmit,
-  });
+  const WardCommonInput({super.key, required this.onChanged, this.onSubmit});
 
   @override
   State<WardCommonInput> createState() => WardCommonInputState();
@@ -57,14 +54,16 @@ class WardCommonInputState extends State<WardCommonInput> {
   }
 
   void _emit() {
-    widget.onChanged(WardCommonValues(
-      checkImage: _checkImage,
-      beforeIv: _beforeIv,
-      afterIv: _afterIv,
-      author: _author,
-      authorName: _nameController.text,
-      authorTel: _telController.text,
-    ));
+    widget.onChanged(
+      WardCommonValues(
+        checkImage: _checkImage,
+        beforeIv: _beforeIv,
+        afterIv: _afterIv,
+        author: _author,
+        authorName: _nameController.text,
+        authorTel: _telController.text,
+      ),
+    );
   }
 
   void _onCheckImageChanged(bool? value) {
@@ -138,51 +137,62 @@ class WardCommonInputState extends State<WardCommonInput> {
       children: [
         Expanded(
           flex: 1,
-          child: DropdownMenu<ProtocolAuthor>(
-            initialSelection: _author,
-            expandedInsets: EdgeInsets.zero,
-            label: const Text('Role'),
-            onSelected: (value) {
-              if (value == null) return;
-              setState(() => _author = value);
-              _emit();
-            },
-            dropdownMenuEntries: ProtocolAuthor.values
-                .map((role) => DropdownMenuEntry<ProtocolAuthor>(
+          child: ControlSemantics(
+            label: 'Protocol author role',
+            child: DropdownMenu<ProtocolAuthor>(
+              initialSelection: _author,
+              expandedInsets: EdgeInsets.zero,
+              label: const Text('Role'),
+              onSelected: (value) {
+                if (value == null) return;
+                setState(() => _author = value);
+                _emit();
+              },
+              dropdownMenuEntries: ProtocolAuthor.values
+                  .map(
+                    (role) => DropdownMenuEntry<ProtocolAuthor>(
                       value: role,
                       label: role.label,
-                    ))
-                .toList(),
+                    ),
+                  )
+                  .toList(),
+            ),
           ),
         ),
         const SizedBox(width: 8),
         Expanded(
           flex: 2,
-          child: TextField(
-            controller: _nameController,
-            textInputAction: TextInputAction.next,
-            decoration: const InputDecoration(
-              labelText: 'Name',
-              hintText: 'Name',
-              border: OutlineInputBorder(),
+          child: ControlSemantics(
+            label: 'Name',
+            child: TextField(
+              controller: _nameController,
+              textInputAction: TextInputAction.next,
+              decoration: const InputDecoration(
+                labelText: 'Name',
+                hintText: 'Name',
+                border: OutlineInputBorder(),
+              ),
+              onChanged: (_) => _emit(),
+              onSubmitted: (_) => widget.onSubmit?.call(),
             ),
-            onChanged: (_) => _emit(),
-            onSubmitted: (_) => widget.onSubmit?.call(),
           ),
         ),
         const SizedBox(width: 8),
         Expanded(
           flex: 1,
-          child: TextField(
-            controller: _telController,
-            textInputAction: TextInputAction.done,
-            decoration: const InputDecoration(
-              labelText: 'Tel.',
-              hintText: 'Tel.',
-              border: OutlineInputBorder(),
+          child: ControlSemantics(
+            label: 'Tel.',
+            child: TextField(
+              controller: _telController,
+              textInputAction: TextInputAction.done,
+              decoration: const InputDecoration(
+                labelText: 'Tel.',
+                hintText: 'Tel.',
+                border: OutlineInputBorder(),
+              ),
+              onChanged: (_) => _emit(),
+              onSubmitted: (_) => widget.onSubmit?.call(),
             ),
-            onChanged: (_) => _emit(),
-            onSubmitted: (_) => widget.onSubmit?.call(),
           ),
         ),
       ],
@@ -209,13 +219,16 @@ class _CheckboxTile extends StatelessWidget {
     return Row(
       children: [
         CupertinoCheckbox(
+          semanticLabel: label,
           value: value,
           onChanged: enabled ? onChanged : null,
         ),
         const SizedBox(width: 8),
-        Text(
-          label,
-          style: enabled ? null : TextStyle(color: disabledColor),
+        ExcludeSemantics(
+          child: Text(
+            label,
+            style: enabled ? null : TextStyle(color: disabledColor),
+          ),
         ),
       ],
     );

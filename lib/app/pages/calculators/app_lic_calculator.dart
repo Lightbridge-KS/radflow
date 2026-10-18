@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_math_fork/flutter_math.dart';
+import '../../widgets/control_semantics.dart';
 import '../../../core/result.dart';
 import '../../../services/calculator/lic_calculator.dart';
 import '../../../services/calculator/shared/template_renderer.dart';
@@ -19,8 +20,10 @@ class AppLicCalculator extends ConsumerStatefulWidget {
 
 class _AppLicCalculatorState extends ConsumerState<AppLicCalculator> {
   final TextEditingController _t2StarLtLobeController = TextEditingController();
-  final TextEditingController _t2StarRtAntLobeController = TextEditingController();
-  final TextEditingController _t2StarRtPostLobeController = TextEditingController();
+  final TextEditingController _t2StarRtAntLobeController =
+      TextEditingController();
+  final TextEditingController _t2StarRtPostLobeController =
+      TextEditingController();
   final TextEditingController _outputController = TextEditingController();
 
   @override
@@ -43,7 +46,9 @@ class _AppLicCalculatorState extends ConsumerState<AppLicCalculator> {
       case Success(value: final data):
         // Get template and render
         final service = ref.read(snippetTemplatesServiceProvider);
-        final template = await service.getTemplate(SnippetTemplatesService.licId);
+        final template = await service.getTemplate(
+          SnippetTemplatesService.licId,
+        );
 
         if (!mounted) return;
 
@@ -81,9 +86,9 @@ class _AppLicCalculatorState extends ConsumerState<AppLicCalculator> {
       children: [
         Text(
           'Liver Iron Concentration (LIC) Calculator',
-          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
+          style: Theme.of(
+            context,
+          ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 16),
         Row(
@@ -93,58 +98,73 @@ class _AppLicCalculatorState extends ConsumerState<AppLicCalculator> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  TextField(
-                    controller: _t2StarLtLobeController,
-                    decoration: const InputDecoration(
-                      labelText: 'T2* Left Lobe (ms)',
-                      hintText: 'e.g. 15.5',
-                      border: OutlineInputBorder(),
+                  ControlSemantics(
+                    label: 'T2* Left Lobe (ms)',
+                    child: TextField(
+                      controller: _t2StarLtLobeController,
+                      decoration: const InputDecoration(
+                        labelText: 'T2* Left Lobe (ms)',
+                        hintText: 'e.g. 15.5',
+                        border: OutlineInputBorder(),
+                      ),
+                      keyboardType: const TextInputType.numberWithOptions(
+                        decimal: true,
+                      ),
+                      onSubmitted: (_) => _calculate(),
                     ),
-                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                    onSubmitted: (_) => _calculate(),
                   ),
                   const SizedBox(height: 12),
-                  TextField(
-                    controller: _t2StarRtAntLobeController,
-                    decoration: const InputDecoration(
-                      labelText: 'T2* Right Anterior Lobe (ms)',
-                      hintText: 'e.g. 14.2',
-                      border: OutlineInputBorder(),
+                  ControlSemantics(
+                    label: 'T2* Right Anterior Lobe (ms)',
+                    child: TextField(
+                      controller: _t2StarRtAntLobeController,
+                      decoration: const InputDecoration(
+                        labelText: 'T2* Right Anterior Lobe (ms)',
+                        hintText: 'e.g. 14.2',
+                        border: OutlineInputBorder(),
+                      ),
+                      keyboardType: const TextInputType.numberWithOptions(
+                        decimal: true,
+                      ),
+                      onSubmitted: (_) => _calculate(),
                     ),
-                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                    onSubmitted: (_) => _calculate(),
                   ),
                   const SizedBox(height: 12),
-                  TextField(
-                    controller: _t2StarRtPostLobeController,
-                    decoration: const InputDecoration(
-                      labelText: 'T2* Right Posterior Lobe (ms)',
-                      hintText: 'e.g. 16.8',
-                      border: OutlineInputBorder(),
+                  ControlSemantics(
+                    label: 'T2* Right Posterior Lobe (ms)',
+                    child: TextField(
+                      controller: _t2StarRtPostLobeController,
+                      decoration: const InputDecoration(
+                        labelText: 'T2* Right Posterior Lobe (ms)',
+                        hintText: 'e.g. 16.8',
+                        border: OutlineInputBorder(),
+                      ),
+                      keyboardType: const TextInputType.numberWithOptions(
+                        decimal: true,
+                      ),
+                      onSubmitted: (_) => _calculate(),
                     ),
-                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                    onSubmitted: (_) => _calculate(),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     'Enter T2* values in milliseconds from ROI measurements in each hepatic lobe',
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Colors.grey,
-                    ),
+                    style: Theme.of(
+                      context,
+                    ).textTheme.bodySmall?.copyWith(color: Colors.grey),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     'Normal LIC: <1.8 mg/g | Borderline: 1.8-3.2 | Mild: 3.2-7.0 | Moderate: 7.0-15.0 mg/g | Severe ≥ 15.0',
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Colors.grey,
-                    ),
+                    style: Theme.of(
+                      context,
+                    ).textTheme.bodySmall?.copyWith(color: Colors.grey),
                   ),
                   const SizedBox(height: 12),
                   Text(
                     'Calculation use Modified Garbowski equation:',
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Colors.grey,
-                    ),
+                    style: Theme.of(
+                      context,
+                    ).textTheme.bodySmall?.copyWith(color: Colors.grey),
                   ),
                   const SizedBox(height: 8),
                   Center(
@@ -156,15 +176,16 @@ class _AppLicCalculatorState extends ConsumerState<AppLicCalculator> {
                   const SizedBox(height: 8),
                   Text(
                     'Where T2* is in milliseconds and LIC is in mg Fe/g dry weight',
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Colors.grey,
-                    ),
+                    style: Theme.of(
+                      context,
+                    ).textTheme.bodySmall?.copyWith(color: Colors.grey),
                   ),
                   const SizedBox(height: 16),
-                  Text("References:",
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Colors.grey,
-                      ),
+                  Text(
+                    "References:",
+                    style: Theme.of(
+                      context,
+                    ).textTheme.bodySmall?.copyWith(color: Colors.grey),
                   ),
                   const SizedBox(height: 8),
                   const CitationUrlLauncher(
@@ -183,14 +204,17 @@ class _AppLicCalculatorState extends ConsumerState<AppLicCalculator> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  TextField(
-                    controller: _outputController,
-                    decoration: const InputDecoration(
-                      hintText: 'Liver Iron Concentration Report...',
-                      border: OutlineInputBorder(),
+                  ControlSemantics(
+                    label: 'Liver iron concentration report',
+                    child: TextField(
+                      controller: _outputController,
+                      decoration: const InputDecoration(
+                        hintText: 'Liver Iron Concentration Report...',
+                        border: OutlineInputBorder(),
+                      ),
+                      readOnly: false,
+                      maxLines: 12,
                     ),
-                    readOnly: false,
-                    maxLines: 12
                   ),
                   const SizedBox(height: 8),
                   Row(
@@ -198,15 +222,24 @@ class _AppLicCalculatorState extends ConsumerState<AppLicCalculator> {
                     children: [
                       Row(
                         children: [
-                          GenerateButton(onPressed: _calculate),
+                          GenerateButton(
+                            semanticLabel: 'Generate liver iron concentration',
+                            onPressed: _calculate,
+                          ),
                           const SizedBox(width: 8),
-                          CopyButton(controller: _outputController),
+                          CopyButton(
+                            semanticLabel: 'Copy liver iron concentration',
+                            controller: _outputController,
+                          ),
                         ],
                       ),
                       ElevatedButton.icon(
                         onPressed: _resetInputs,
                         icon: const Icon(Icons.refresh),
-                        label: const Text('Reset'),
+                        label: const Text(
+                          'Reset',
+                          semanticsLabel: 'Reset liver iron concentration',
+                        ),
                       ),
                     ],
                   ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../widgets/control_semantics.dart';
 import 'tirads_nodule_input_card.dart';
 import '../../../../services/calculator/tirads_calculator/tirads_calculator.dart';
 import '../../../../services/calculator/shared/template_renderer.dart';
@@ -17,7 +18,8 @@ class AppTiradsCalculator extends ConsumerStatefulWidget {
   const AppTiradsCalculator({super.key});
 
   @override
-  ConsumerState<AppTiradsCalculator> createState() => _AppTiradsCalculatorState();
+  ConsumerState<AppTiradsCalculator> createState() =>
+      _AppTiradsCalculatorState();
 }
 
 class _AppTiradsCalculatorState extends ConsumerState<AppTiradsCalculator> {
@@ -89,7 +91,9 @@ class _AppTiradsCalculatorState extends ConsumerState<AppTiradsCalculator> {
       final sizeInCm = double.tryParse(state.sizeText);
       return (
         id: state.id,
-        location: state.location.isEmpty ? 'Nodule ${state.id}' : state.location,
+        location: state.location.isEmpty
+            ? 'Nodule ${state.id}'
+            : state.location,
         composition: state.composition!,
         echogenicity: state.echogenicity!,
         shape: state.shape!,
@@ -108,13 +112,17 @@ class _AppTiradsCalculatorState extends ConsumerState<AppTiradsCalculator> {
       case Success(value: final assessment):
         // Get template
         final service = ref.read(snippetTemplatesServiceProvider);
-        final template = await service.getTemplate(SnippetTemplatesService.tiradsId);
+        final template = await service.getTemplate(
+          SnippetTemplatesService.tiradsId,
+        );
 
         if (!mounted) return;
 
         // Convert to template data and render
         try {
-          final templateData = TiradsCalculator.overallToTemplateData(assessment);
+          final templateData = TiradsCalculator.overallToTemplateData(
+            assessment,
+          );
           final output = TemplateRenderer.render(template, templateData);
           setState(() => _outputController.text = output);
         } catch (e) {
@@ -154,18 +162,12 @@ class _AppTiradsCalculatorState extends ConsumerState<AppTiradsCalculator> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Left Column - Input Cards
-              Expanded(
-                flex: 1,
-                child: _buildInputColumn(context),
-              ),
+              Expanded(flex: 1, child: _buildInputColumn(context)),
 
               const SizedBox(width: 16),
 
               // Right Column - Output
-              Expanded(
-                flex: 1,
-                child: _buildOutputColumn(context),
-              ),
+              Expanded(flex: 1, child: _buildOutputColumn(context)),
             ],
           ),
         ),
@@ -216,19 +218,19 @@ class _AppTiradsCalculatorState extends ConsumerState<AppTiradsCalculator> {
         Card(
           child: Padding(
             padding: const EdgeInsets.all(16.0),
-            child: TextField(
-              controller: _outputController,
-              maxLines: 23,
-              decoration: InputDecoration(
-                hintText: 'TI-RADS Report...',
-                border: const OutlineInputBorder(),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: colorScheme.tertiary),
+            child: ControlSemantics(
+              label: 'TI-RADS report',
+              child: TextField(
+                controller: _outputController,
+                maxLines: 23,
+                decoration: InputDecoration(
+                  hintText: 'TI-RADS Report...',
+                  border: const OutlineInputBorder(),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: colorScheme.tertiary),
+                  ),
                 ),
-              ),
-              style: const TextStyle(
-                fontFamily: 'monospace',
-                fontSize: 14,
+                style: const TextStyle(fontFamily: 'monospace', fontSize: 14),
               ),
             ),
           ),
@@ -238,9 +240,15 @@ class _AppTiradsCalculatorState extends ConsumerState<AppTiradsCalculator> {
         // Action Buttons
         Row(
           children: [
-            GenerateButton(onPressed: _generate),
+            GenerateButton(
+              semanticLabel: 'Generate TI-RADS report',
+              onPressed: _generate,
+            ),
             const SizedBox(width: 8),
-            CopyButton(controller: _outputController),
+            CopyButton(
+              semanticLabel: 'Copy TI-RADS report',
+              controller: _outputController,
+            ),
             const Spacer(),
             FilledButton.tonalIcon(
               onPressed: _resetAll,
